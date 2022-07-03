@@ -68,5 +68,4 @@ if streams.status_code != 200: #TODO: Once token breaks play around more here an
     #refresh_token(refreshToken, clientID, clientSecret, configPath)
 else:
     write_results(streams)
-
 #endregion
