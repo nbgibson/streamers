@@ -27,15 +27,12 @@ def refresh_token(refreshToken, clientID, clientSecret, configPath):
     print("Renewing Token...")
     headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     data = 'grant_type=refresh_token&refresh_token=' + refreshToken + '&client_id=' + clientID + '&client_secret=' + clientSecret
-    print(data)
     r = requests.post('https://id.twitch.tv/oauth2/token', headers=headers, data=data)
     
     newToken_json_string = r.json()
     newToken_json_dump = json.dumps(newToken_json_string)
     newToken_json_object = json.loads(newToken_json_dump)
     newToken = newToken_json_object["access_token"]
-    print("JSON Token: ")
-    print(newToken)
     Path(configPath / "token").write_text(newToken)
 
 def write_results(streams):
@@ -65,7 +62,8 @@ streams = query_streams(userID, clientID, token)
 
 if streams.status_code != 200: #TODO: Once token breaks play around more here and validate workflows.
     print("Error getting stream data. Response code: " + str(streams.status_code))
-    #refresh_token(refreshToken, clientID, clientSecret, configPath)
+    refresh_token(refreshToken, clientID, clientSecret, configPath)
+    print("Attempting token refresh, please try again")
 else:
     write_results(streams)
 #endregion
