@@ -60,10 +60,10 @@ check_config(configPath)
 #Use data pulled from config files to query Twitch API. Returns JSON and a status regardless of validity.
 streams = query_streams(userID, clientID, token)
 
-if streams.status_code != 200: #TODO: Once token breaks play around more here and validate workflows.
+if streams.ok:    
+    write_results(streams)
+else:
     print("Error getting stream data. Response code: " + str(streams.status_code))
     refresh_token(refreshToken, clientID, clientSecret, configPath)
     print("Attempting token refresh, please try again")
-else:
-    write_results(streams)
 #endregion
