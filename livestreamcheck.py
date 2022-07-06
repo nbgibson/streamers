@@ -1,6 +1,5 @@
 #!/home/nate/.local/bin/livestreamcheck/venv/bin/python3
 #regions imports
-import json
 import requests
 from pathlib import Path
 #endregion
