@@ -24,7 +24,7 @@ def config_set(configDir, configPath): #Check if the config file is present, and
     return config
         
 def query_streams(config):
-    headers = { 'Authorization': 'Bearer ' + config['TwitchBits']['token'], 'Client-Id': config['TwitchBits']['clientID'] }
+    headers = { 'Authorization': 'Bearer ' + config['TwitchBits']['access_token'], 'Client-Id': config['TwitchBits']['clientID'] }
     data = { 'user_id': config['TwitchBits']['userID'] }
     r = requests.get('https://api.twitch.tv/helix/streams/followed', params=data, headers=headers)
     return r
@@ -35,6 +35,7 @@ def refresh_token(configPath, config):
     data = 'grant_type=refresh_token&refresh_token=' + config['TwitchBits']['refreshToken'] + '&client_id=' + config['TwitchBits']['clientID'] + '&client_secret=' + config['TwitchBits']['clientSecret']
     r = requests.post('https://id.twitch.tv/oauth2/token', headers=headers, data=data)
     config.set('TwitchBits', 'access_token', r.json()["access_token"])
+    print("r.json()[\"access_token\"]: " + str(r.json()["access_token"]))
     with open(configPath, 'w') as configfile:
             config.write(configfile)
 
