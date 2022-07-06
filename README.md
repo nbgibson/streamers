@@ -12,7 +12,7 @@ Simply clone down or save the livestreamcheck.py script to your system, preferbl
  - Some flavor of Python3
  - The Python requests library: `pip install --user requests`
  - An Internet connection
- - Linux (this *should* in theory work on Windows or OSX, but hasn't been tested on those platforms at this time)
+ - Linux/OSX (this *should* in theory work on Windows, but hasn't been tested on the platform at this time)
 
 ## Execution
 Assuming Python is installed on your system (it proably is) simply make the script executable via `chmod a+x livestreamcheck.py` and execute it. The script should hook into your system's python install automatically, otherwise execute it via `python3 livestreamcheck.py`.
