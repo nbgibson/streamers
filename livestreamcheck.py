@@ -14,7 +14,7 @@ def config_set(configDir, configPath): #Check if the config file is present, and
         print("Config file not found. Creating dummy file at: " + str(configPath))
         config = configparser.ConfigParser()
         Path(configPath).touch()
-        config['TwitchBits'] = {'userID': 'foo', 'clientID': 'bar', 'token': 'fizz', 'refreshToken': 'buzz', 'clientSecret': 'fizzbuzz'}
+        config['TwitchBits'] = {'userID': 'foo', 'clientID': 'bar', 'access_token': 'fizz', 'refreshToken': 'buzz', 'clientSecret': 'fizzbuzz'}
         with open(configPath, 'w') as configfile:
             config.write(configfile)
         print("Please refer to the README.md to get guidance on how to generate the needed values for the config file.")
