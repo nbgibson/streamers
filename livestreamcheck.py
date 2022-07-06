@@ -1,4 +1,4 @@
-#!/home/nate/.local/bin/livestreamcheck/venv/bin/python3
+#!/usr/bin/env python 
 #regions imports
 import configparser
 import requests
