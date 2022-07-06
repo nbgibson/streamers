@@ -2,7 +2,7 @@
 A python script to query Twitch's API to see what followed channels, if any, are currently broadcasting.
 
 ## Ok, so what's the deal here?
-Twitch doesn't provide a readily available method to pull down followed stream status so we need to set up a method to get at the data and display it in a easy to read fashion. This script performs that pretty well (though I'm not an impartial source), but setting up this data and so forth automatically is a bit beyond the current scope of the program and my personal scope of "things I'm willing to put up with"&trade;. So you're going to want to read the docs, though you're doing that already. Good for you.
+Twitch doesn't provide a readily available method to pull down followed stream status via CLI so we need to set up a method to get at the data and display it in a easy to read fashion. This script performs that pretty well (though I'm not an impartial source), but setting up this data and so forth automatically is a bit beyond the current scope of the program and my personal scope of "things I'm willing to put up with"&trade;. So you're going to want to read the docs, though you're doing that already. Good for you.
 
 ## Script Requirements
  - An existing Twitch account
