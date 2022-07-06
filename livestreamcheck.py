@@ -7,9 +7,11 @@ from pathlib import Path
 
 #region functions
 def config_set(configDir, configPath): #Check if the config file is present, and if not create it with dummy values
+    if not (configDir.is_dir()):
+        print("Creating config dir at: " + str(configDir))
+        Path.mkdir(configDir)
     if not (configPath.is_file()):
         print("Config file not found. Creating dummy file at: " + str(configPath))
-        Path.mkdir(configDir)
         config = configparser.ConfigParser()
         Path(configPath).touch()
         config['TwitchBits'] = {'userID': 'foo', 'clientID': 'bar', 'token': 'fizz', 'refreshToken': 'buzz', 'clientSecret': 'fizzbuzz'}
@@ -18,7 +20,6 @@ def config_set(configDir, configPath): #Check if the config file is present, and
         print("Please refer to the README.md to get guidance on how to generate the needed values for the config file.")
     else:
         #Populate vars
-        print("Populating varibles...")
         config = configparser.RawConfigParser()
         config.read(configPath)
     return config
@@ -47,8 +48,12 @@ def write_results(streams):
 #region main
 configDir = Path('~/.config/livestreamcheck').expanduser()
 configFile = Path('~/.config/livestreamcheck/config').expanduser()
+
+
+
 #Verify config dir is present and create one if it is not. TODO: Walk through values needed in README.md
 config = config_set(configDir, configFile)
+
 #Deadman's switch
 if config['TwitchBits']['userID'] == "foo":
     print("Quitting program. Please populate config file.")
