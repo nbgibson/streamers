@@ -9,12 +9,13 @@ Simply clone down or save the livestreamcheck.py script to your system, preferbl
 
 ## Script Requirements
  - An existing Twitch account
+ - Some flavor of Python3
+ - The Python requests library: `pip install --user requests`
  - An Internet connection
- - Python
  - Linux (this *should* in theory work on Windows or OSX, but hasn't been tested on those platforms at this time)
 
 ## Execution
-Assuming Python is installed on your system (it proably is) simply make the script executable via `chmod a+x livestreamcheck.py` and execute it. The script should hook into your system's python install automatically, otherwise execute it via `python livestreamcheck.py`.
+Assuming Python is installed on your system (it proably is) simply make the script executable via `chmod a+x livestreamcheck.py` and execute it. The script should hook into your system's python install automatically, otherwise execute it via `python3 livestreamcheck.py`.
 
 ## So how do we go about making this work?
 1. Download the script, put it in some location, and execute it to generate a dummy config file: `~/.config/livestreamcheck/config` that should read as follows:
