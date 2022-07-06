@@ -19,7 +19,6 @@ def check_config(configPath): #Check if the config dir is present, and if not cr
 def query_streams(userID, clientID, token):
     headers = { 'Authorization': 'Bearer ' + token, 'Client-Id': clientID }
     data = { 'user_id': userID }
-
     r = requests.get('https://api.twitch.tv/helix/streams/followed', params=data, headers=headers)
     return r
 
@@ -31,11 +30,8 @@ def refresh_token(refreshToken, clientID, clientSecret, configPath):
     Path(configPath / "token").write_text(r.json()["access_token"])
 
 def write_results(streams):
-    #streamlist = json.loads(streams.text)
-    streamlist = streams.json()
-    s = streamlist['data']
     print ("\nCHANNEL " + ' '*13 + "GAME" + ' '*37 + "VIEWERS" + ' '*8 + "\n" + '-'*80)
-    for stream in s:
+    for stream in streams.json()["data"]:
          print ("{} {} {}".format(stream['user_name'].ljust(20), stream['game_name'].ljust(40), str(stream['viewer_count']).ljust(8)))
 #endregion
 
