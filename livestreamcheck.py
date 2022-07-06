@@ -28,12 +28,7 @@ def refresh_token(refreshToken, clientID, clientSecret, configPath):
     headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     data = 'grant_type=refresh_token&refresh_token=' + refreshToken + '&client_id=' + clientID + '&client_secret=' + clientSecret
     r = requests.post('https://id.twitch.tv/oauth2/token', headers=headers, data=data)
-    
-    newToken_json_string = r.json()
-    newToken_json_dump = json.dumps(newToken_json_string)
-    newToken_json_object = json.loads(newToken_json_dump)
-    newToken = newToken_json_object["access_token"]
-    Path(configPath / "token").write_text(newToken)
+    Path(configPath / "token").write_text(r.json()["access_token"])
 
 def write_results(streams):
     streamlist = json.loads(streams.text)
@@ -59,11 +54,11 @@ check_config(configPath)
 
 #Use data pulled from config files to query Twitch API. Returns JSON and a status regardless of validity.
 streams = query_streams(userID, clientID, token)
-
-if streams.ok:    
-    write_results(streams)
-else:
-    print("Error getting stream data. Response code: " + str(streams.status_code))
-    refresh_token(refreshToken, clientID, clientSecret, configPath)
-    print("Attempting token refresh, please try again")
+refresh_token(refreshToken, clientID, clientSecret, configPath)
+#if streams.ok:    
+#    write_results(streams)
+#else:
+#    print("Error getting stream data. Response code: " + str(streams.status_code))
+#    refresh_token(refreshToken, clientID, clientSecret, configPath)
+#    print("Attempting token refresh, please try again")
 #endregion
