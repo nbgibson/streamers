@@ -31,7 +31,8 @@ def refresh_token(refreshToken, clientID, clientSecret, configPath):
     Path(configPath / "token").write_text(r.json()["access_token"])
 
 def write_results(streams):
-    streamlist = json.loads(streams.text)
+    #streamlist = json.loads(streams.text)
+    streamlist = streams.json()
     s = streamlist['data']
     print ("\nCHANNEL " + ' '*13 + "GAME" + ' '*37 + "VIEWERS" + ' '*8 + "\n" + '-'*80)
     for stream in s:
@@ -54,11 +55,11 @@ check_config(configPath)
 
 #Use data pulled from config files to query Twitch API. Returns JSON and a status regardless of validity.
 streams = query_streams(userID, clientID, token)
-refresh_token(refreshToken, clientID, clientSecret, configPath)
-#if streams.ok:    
-#    write_results(streams)
-#else:
-#    print("Error getting stream data. Response code: " + str(streams.status_code))
-#    refresh_token(refreshToken, clientID, clientSecret, configPath)
-#    print("Attempting token refresh, please try again")
+
+if streams.ok:    
+    write_results(streams)
+else:
+    print("Error getting stream data. Response code: " + str(streams.status_code))
+    refresh_token(refreshToken, clientID, clientSecret, configPath)
+    print("Attempting token refresh, please try again")
 #endregion
