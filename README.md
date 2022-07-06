@@ -4,14 +4,19 @@ Inspired by [begs's](https://github.com/begs) [livestreamers](https://github.com
 ## Ok, so what's the deal here?
 Twitch doesn't provide a readily available method to pull down followed stream status via CLI so we need to set up a method to get at the data and display it in a easy to read fashion. This script performs that pretty well (though I'm not an impartial source), but setting up this data and so forth automatically is a bit beyond the current scope of the program and my personal scope of "things I'm willing to put up with"&trade;. So you're going to want to read the docs, though you're doing that already. Good for you.
 
+## Installation
+Simply clone down or save the livestreamcheck.py script to your system, preferbly in a location on your System Path.
+
 ## Script Requirements
  - An existing Twitch account
  - An Internet connection
  - Python
  - Linux (this *should* in theory work on Windows or OSX, but hasn't been tested on those platforms at this time)
 
+## Execution
+Assuming Python is installed on your system (it proably is) simply make the script executable via `chmod a+x livestreamcheck.py` and execute it. The script should hook into your system's python install automatically, otherwise execute it via `python livestreamcheck.py`.
 
-## So how do we go about this?
+## So how do we go about making this work?
 1. Download the script, put it in some location, and execute it to generate a dummy config file: `~/.config/livestreamcheck/config` that should read as follows:
  ```
  [TwitchBits]
