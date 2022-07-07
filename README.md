@@ -1,5 +1,5 @@
 # livestreamcheck
-Inspired by [begs's](https://github.com/begs) [livestreamers](https://github.com/begs/livestreamers) script: A python script/CLI Tool to query Twitch's API to see what followed channels, if any, are currently broadcasting.
+A CLI tool inspired by [begs's](https://github.com/begs) [livestreamers](https://github.com/begs/livestreamers) script. Queries Twitch's API to see what followed channels, if any, are currently broadcasting.
 
 ## Ok, so what's the deal here?
 Twitch doesn't provide a readily available method to pull down followed stream status via CLI so we need to set up a method to get at the data and display it in a easy to read fashion. This script performs that pretty well (though I'm not an impartial source), but setting up this data and so forth automatically is a bit beyond the current scope of the program and my personal scope of "things I'm willing to put up with"&trade;. So you're going to want to read the docs, though you're doing that already. Good for you.
@@ -10,23 +10,22 @@ Simply clone down or save the livestreamcheck.py script to your system, preferbl
 ## Script Requirements
  - An existing Twitch account
  - Some flavor of Python3
- - The Python requests library: `pip install --user requests`
+ - The Python requests library: `pip install --user requests` || `pip install -r requirements.txt`
  - An Internet connection
- - Linux/OSX (this *should* in theory work on Windows, but hasn't been tested on the platform at this time)
 
 ## Execution
-Assuming Python is installed on your system (it proably is) simply make the script executable via `chmod a+x livestreamcheck.py` and execute it. The script should hook into your system's python install automatically, otherwise execute it via `python3 livestreamcheck.py`.
+Assuming Python is installed on your system (it proably is) simply make the script executable via `chmod a+x livestreamcheck.py` if needed and execute it. The script should hook into your system's python install automatically. Windows folks: I'm still working on a better way to go about this, but you currently have to run `python3 livestreamcheck.py` from within cmd/powershell. If you've got ideas I'm happy to hear them.
 
 ## So how do we go about making this work?
 1. Download the script, put it in some location, and execute it to generate a dummy config file: `~/.config/livestreamcheck/config` that should read as follows:
- ```
- [TwitchBits]
-userid = foo
-clientid = bar
-access_token = fizz
-refreshtoken = buzz
-clientsecret = fizzbuzz
-```
+    ```
+    [TwitchBits]
+    userid = foo
+    clientid = bar
+    access_token = fizz
+    refreshtoken = buzz
+    clientsecret = fizzbuzz
+    ```
 
 2. Head on over to the [Twitch developer console](https://dev.twitch.tv/console) and make an account ([docs](https://dev.twitch.tv/docs/authentication/register-app)) if you do not already have one.
 
