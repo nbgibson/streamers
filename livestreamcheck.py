@@ -9,7 +9,7 @@ from pathlib import Path
 def config_set(configDir, configPath): #Check if the config file is present, and if not create it with dummy values
     if not (configDir.is_dir()):
         print("Creating config dir at: " + str(configDir))
-        Path.mkdir(configDir)
+        Path.mkdir(configDir, parents=True, exist_ok=True)
     if not (configPath.is_file()):
         print("Config file not found. Creating dummy file at: " + str(configPath))
         config = configparser.ConfigParser()
