@@ -5,7 +5,7 @@ Inspired by [begs's](https://github.com/begs) [livestreamers](https://github.com
 Twitch doesn't provide a readily available method to pull down followed stream status via CLI so we need to set up a method to get at the data and display it in a easy to read fashion. This script performs that pretty well (though I'm not an impartial source), but setting up this data and so forth automatically is a bit beyond the current scope of the program and my personal scope of "things I'm willing to put up with"&trade;. So you're going to want to read the docs, though you're doing that already. Good for you.
 
 ## Installation
-Simply clone down or save the livestreamcheck.py script to your system, preferbly in a location on your System Path.
+Simply clone down or save the livestreamcheck.py script to your system, preferbly in a location on your System Path. If not already present, install the requests library via the command below or via `pip install -r requirements.txt`.
 
 ## Script Requirements
  - An existing Twitch account
