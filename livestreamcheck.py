@@ -43,7 +43,7 @@ def write_results(streams):
     print ("\nCHANNEL " + ' '*13 + "GAME" + ' '*37 + "VIEWERS" + ' '*8 + "\n" + '-'*80)
     for stream in streams.json()["data"]:
         print ("{} {} {}".format(stream['user_name'].ljust(20)[:20], stream['game_name'].ljust(40)[:40], str(stream['viewer_count']).ljust(8)))
-#endregion  38chars
+#endregion
 
 #region main
 configDir = Path('~/.config/livestreamcheck').expanduser()
