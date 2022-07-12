@@ -85,9 +85,14 @@ if streams.ok:
     if (len(streams.json()['data']) > 0):
         write_results(streams)
         locate = shutil.which('streamlink')
-        if locate and (args.streamlink or config['StreamLinkBits']['enabled'].lower() == "true"):
+        try:
+            if locate and (args.streamlink or config['StreamLinkBits']['enabled'].lower() == "true"):
+                print("")
+                stream_link(streams)
+        except KeyError:
             print("")
-            stream_link(streams)
+            print("Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it.")
+            quit()
     else:
         print("No followed streams online at this time.")
 else:
