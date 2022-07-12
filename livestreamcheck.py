@@ -58,6 +58,8 @@ def stream_link(streams):
         except ValueError: #TODO: Catch Ctrl+C here gracefully.
             print("Sorry, I didn't understand that.")
             continue
+        except KeyboardInterrupt:
+            quit()
         else:
             break
     
