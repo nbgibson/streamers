@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 #regions imports
-import configparser
-import requests
+import os
+import configparser #Config fun
+import requests #API fun
 from pathlib import Path
+import shutil #Streamlink check
 #endregion
 
 #region functions
@@ -43,6 +45,24 @@ def write_results(streams):
     print ("\nCHANNEL " + ' '*13 + "GAME" + ' '*37 + "VIEWERS" + ' '*8 + "\n" + '-'*80)
     for stream in streams.json()["data"]:
         print ("{} {} {}".format(stream['user_name'].ljust(20)[:20], stream['game_name'].ljust(40)[:40], str(stream['viewer_count']).ljust(8)))
+
+def stream_link(streams):
+    #Streamlink Check
+    locate = shutil.which('streamlink')
+    if locate:
+        while True:
+            try:
+                # Note: Python 2.x users should use raw_input, the equivalent of 3.x's input
+                index = int(input("Enter index of stream to watch: "))
+            except ValueError:
+                print("Sorry, I didn't understand that.")
+                #better try again... Return to the start of the loop
+                continue
+            else:
+                break
+        print("Index: " + str(index))
+        streamer = streams.json()['data'][index]['user_name']
+        os.system(locate + " https://twitch.tv/" + streamer)
 #endregion
 
 #region main
@@ -58,6 +78,8 @@ if config['TwitchBits']['userID'] == "foo":
 streams = query_streams(config)
 if streams.ok:    
     write_results(streams)
+    print("")
+    stream_link(streams)
 else:
     print("Error getting stream data. Response code: " + str(streams.status_code))
     refresh_token(configFile, config)
