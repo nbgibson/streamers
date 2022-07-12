@@ -47,22 +47,21 @@ def write_results(streams):
         print ("{} {} {}".format(stream['user_name'].ljust(20)[:20], stream['game_name'].ljust(40)[:40], str(stream['viewer_count']).ljust(8)))
 
 def stream_link(streams):
-    #Streamlink Check
-    locate = shutil.which('streamlink')
-    if locate:
-        while True:
-            try:
-                # Note: Python 2.x users should use raw_input, the equivalent of 3.x's input
+    while True:
+        try:
+            maxSel = len(streams.json()['data'])
+            index = -1
+            print("maxSel: " + str(maxSel))
+            while index not in range(0, maxSel):
                 index = int(input("Enter index of stream to watch: "))
-            except ValueError:
-                print("Sorry, I didn't understand that.")
-                #better try again... Return to the start of the loop
-                continue
-            else:
-                break
-        print("Index: " + str(index))
-        streamer = streams.json()['data'][index]['user_name']
-        os.system(locate + " https://twitch.tv/" + streamer)
+        except ValueError:
+            print("Sorry, I didn't understand that.")
+            continue
+        else:
+            break
+    
+    streamer = streams.json()['data'][index]['user_name']
+    os.system(locate + " https://twitch.tv/" + streamer)
 #endregion
 
 #region main
@@ -77,9 +76,14 @@ if config['TwitchBits']['userID'] == "foo":
 
 streams = query_streams(config)
 if streams.ok:    
-    write_results(streams)
-    print("")
-    stream_link(streams)
+    if (len(streams.json()['data']) > 0):
+        write_results(streams)
+        locate = shutil.which('streamlink')
+        if locate:
+            print("")
+            stream_link(streams)
+    else:
+        print("No followed streams online at this time.")
 else:
     print("Error getting stream data. Response code: " + str(streams.status_code))
     refresh_token(configFile, config)
