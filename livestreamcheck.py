@@ -83,18 +83,23 @@ if config['TwitchBits']['userID'] == "foo":
     print("Quitting program. Please populate config file.")
     quit()
 streams = query_streams(config)
+try:
+    if args.streamlink or config['StreamLinkBits']['enabled'].lower() == "true":
+        streamLink = True
+    else:
+        streamLink = False
+except KeyError:
+    print("")
+    print("Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it.")
+    quit()
+
 if streams.ok:    
     if (len(streams.json()['data']) > 0):
         write_results(streams)
         locate = shutil.which('streamlink')
-        try:
-            if locate and (args.streamlink or config['StreamLinkBits']['enabled'].lower() == "true"):
-                print("")
-                stream_link(streams)
-        except KeyError:
+        if locate and streamLink:
             print("")
-            print("Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it.")
-            quit()
+            stream_link(streams)
     else:
         print("No followed streams online at this time.")
 else:
