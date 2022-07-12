@@ -25,6 +25,9 @@ Assuming Python is installed on your system (it proably is) simply make the scri
     access_token = fizz
     refreshtoken = buzz
     clientsecret = fizzbuzz
+
+    [StreamLinkBits]
+    enabled = false
     ```
 
 2. Head on over to the [Twitch developer console](https://dev.twitch.tv/console) and make an account ([docs](https://dev.twitch.tv/docs/authentication/register-app)) if you do not already have one.
@@ -67,8 +70,11 @@ Assuming Python is installed on your system (it proably is) simply make the scri
 
 9. Bask in a sense of self accomplsishment; maybe watch a stream or something. Note that every few hours the existing token you have should expire and no longer work. If this happens the script should detect it, attempt to refresh it automatically, and prompt you to re-run it. If this does not work, please verify the values in the config file.
 
+## Hey, I'd like to have this hook into [Streamlink](https://github.com/streamlink/streamlink)
+Buddy, I've got just the thing for you. If streamlink is installed on your system('s PATH) and you pass the `-s` flag to the script (or set enabled to 'True' in the [StreamLinkBits] section of the config) then you will be prompted to select a stream to watch that will then be called in Streamlink. At this time that just amounts to `streamlink https://twitch.tv/[streamer]` so be sure to set up a [config file](https://streamlink.github.io/cli/config.html).
+
 ### TODOs:
 * Implement debugging/logging/ect
-* Investigate integration with [streamlink](https://github.com/streamlink/streamlink)
+* ~~Investigate integration with [Streamlink](https://github.com/streamlink/streamlink)~~
 * Look into automated testing
 * Investigate the viablilty of packaging
