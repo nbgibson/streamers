@@ -55,7 +55,7 @@ def stream_link(streams):
             index = -1
             while index not in range(0, maxSel):
                 index = int(input("Enter index of stream to watch: "))
-        except ValueError: #TODO: Catch Ctrl+C here gracefully.
+        except ValueError:
             print("Sorry, I didn't understand that.")
             continue
         except KeyboardInterrupt:
