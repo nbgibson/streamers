@@ -62,7 +62,7 @@ def stream_link(streams):
             while index not in range(0, maxSel):
                 index = int(input("Enter index of stream to watch: "))
         except ValueError:
-            print("Sorry, I didn't understand that.")
+            print("Sorry, I didn't understand that. Enter an integer from 0 to " + str(maxSel -1))
             continue
         except KeyboardInterrupt:
             quit()
