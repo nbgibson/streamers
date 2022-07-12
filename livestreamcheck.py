@@ -43,11 +43,17 @@ def refresh_token(configPath, config):
     with open(configPath, 'w') as configfile:
             config.write(configfile)
 
-def write_results(streams):
-    print ("\nCHANNEL " + ' '*13 + "GAME" + ' '*37 + "VIEWERS" + ' '*8 + "\n" + '-'*80)
-    for stream in streams.json()["data"]:
-        print ("{} {} {}".format(stream['user_name'].ljust(20)[:20], stream['game_name'].ljust(40)[:40], str(stream['viewer_count']).ljust(8)))
-
+def write_results(streams, streamLinkFlag):
+    if streamLinkFlag:
+        index = 0
+        print ("\nINDEX   CHANNEL " + ' '*13 + "GAME" + ' '*37 + "VIEWERS" + ' '*8 + "\n" + '-'*80)
+        for stream in streams.json()["data"]:
+            print ("{} {} {} {}".format(str(index).ljust(7), stream['user_name'].ljust(20)[:20], stream['game_name'].ljust(40)[:40], str(stream['viewer_count']).ljust(8)))
+            index += 1
+    else:
+        print ("\nCHANNEL " + ' '*13 + "GAME" + ' '*37 + "VIEWERS" + ' '*8 + "\n" + '-'*80)
+        for stream in streams.json()["data"]:
+            print ("{} {} {}".format(stream['user_name'].ljust(20)[:20], stream['game_name'].ljust(40)[:40], str(stream['viewer_count']).ljust(8)))
 def stream_link(streams):
     while True:
         try:
@@ -85,9 +91,9 @@ if config['TwitchBits']['userID'] == "foo":
 streams = query_streams(config)
 try:
     if args.streamlink or config['StreamLinkBits']['enabled'].lower() == "true":
-        streamLink = True
+        streamLinkFlag = True
     else:
-        streamLink = False
+        streamLinkFlag = False
 except KeyError:
     print("")
     print("Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it.")
@@ -95,9 +101,9 @@ except KeyError:
 
 if streams.ok:    
     if (len(streams.json()['data']) > 0):
-        write_results(streams)
+        write_results(streams, streamLinkFlag)
         locate = shutil.which('streamlink')
-        if locate and streamLink:
+        if locate and streamLinkFlag:
             print("")
             stream_link(streams)
     else:
