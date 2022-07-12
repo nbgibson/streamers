@@ -5,6 +5,7 @@ import configparser #Config fun
 import requests #API fun
 from pathlib import Path
 import shutil #Streamlink check
+import argparse
 #endregion
 
 #region functions
@@ -17,6 +18,7 @@ def config_set(configDir, configPath): #Check if the config file is present, and
         config = configparser.ConfigParser()
         Path(configPath).touch()
         config['TwitchBits'] = {'userID': 'foo', 'clientID': 'bar', 'access_token': 'fizz', 'refreshToken': 'buzz', 'clientSecret': 'fizzbuzz'}
+        config['StreamLinkBits'] = {'enabled' : 'false'}
         with open(configPath, 'w') as configfile:
             config.write(configfile)
         print("Please refer to the README.md to get guidance on how to generate the needed values for the config file.")
@@ -51,10 +53,9 @@ def stream_link(streams):
         try:
             maxSel = len(streams.json()['data'])
             index = -1
-            print("maxSel: " + str(maxSel))
             while index not in range(0, maxSel):
                 index = int(input("Enter index of stream to watch: "))
-        except ValueError:
+        except ValueError: #TODO: Catch Ctrl+C here gracefully.
             print("Sorry, I didn't understand that.")
             continue
         else:
@@ -65,21 +66,26 @@ def stream_link(streams):
 #endregion
 
 #region main
+#region parser
+parser = argparse.ArgumentParser(description='Get a list of followed Twitch live streams from the comfort of your own CLI.')
+parser.add_argument('-s', '--streamlink', action="store_true", help='flag to enable streamlink functionality (if installed)')
+args = parser.parse_args()
+#endregion
+#region config
 configDir = Path('~/.config/livestreamcheck').expanduser()
 configFile = Path('~/.config/livestreamcheck/config').expanduser()
 config = config_set(configDir, configFile)
-
+#endregion
 #Deadman's switch
 if config['TwitchBits']['userID'] == "foo":
     print("Quitting program. Please populate config file.")
     quit()
-
 streams = query_streams(config)
 if streams.ok:    
     if (len(streams.json()['data']) > 0):
         write_results(streams)
         locate = shutil.which('streamlink')
-        if locate:
+        if locate and (args.streamlink or config['StreamLinkBits']['enabled'].lower() == "true"):
             print("")
             stream_link(streams)
     else:
