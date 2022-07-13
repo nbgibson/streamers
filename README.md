@@ -55,7 +55,7 @@ Assuming Python is installed on your system (it proably is) simply make the scri
     - You will be prompted to provide access to the application to see who your Twitch account follows, approve the prompt as this won't work otherwise.
     - After approval you will be dumped to an empty/broken page, note the URL displayed in your address bar. It will contain something similar to the following: `http://localhost:3000/?code=[Some_30ish_Character_Code]&scope=user%3Aread%3Afollows` Copy that code down as we will need it in the next step.
 
-7. We'll now take that code and send it back to Twitch to get an authorization and refresh token back so we can actually go about our business. Open up a terminal window (or Powershell/cmd/whatever) and enter the following command: 
+7. We'll now take that code and send it back to Twitch to get an authorization and refresh token back so we can actually go about our business. Open up a terminal window (or Powershell/cmd/whatever) and enter the following command:
 
     ```bash
     curl -X POST 'https://id.twitch.tv/oauth2/token' -d 'client_id=[Your_Client_ID]&client_secret=[Your_Client_Secret]&code=[The_Code_From_Step_6]&grant_type=authorization_code&redirect_uri=http://localhost:3000'
