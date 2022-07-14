@@ -1,4 +1,4 @@
-# livestreamcheck
+# streamers
 
 A CLI tool inspired by [begs's](https://github.com/begs) [livestreamers](https://github.com/begs/livestreamers) script. Queries Twitch's API to see what followed channels, if any, are currently broadcasting.
 
@@ -8,7 +8,7 @@ Twitch doesn't provide a readily available method to pull down followed stream s
 
 ## Installation
 
-Simply clone down or save the livestreamcheck.py script to your system, preferbly in a location on your System Path. If not already present, install the requests library via the command below or via `pip install -r requirements.txt`.
+Simply clone down or save the livestreamcheck.py script to your system, preferably in a location on your System Path. If not already present, install the requests library via the command below or via `pip install -r requirements.txt`.
 
 ## Script Requirements
 
@@ -19,13 +19,13 @@ Simply clone down or save the livestreamcheck.py script to your system, preferbl
 
 ## Execution
 
-Assuming Python is installed on your system (it proably is) simply make the script executable via `chmod a+x livestreamcheck.py` if needed and execute it. The script should hook into your system's python install automatically. Windows folks: I'm still working on a better way to go about this, but you currently have to run `python3 livestreamcheck.py` from within cmd/powershell. If you've got ideas I'm happy to hear them.
+Assuming Python is installed on your system (it probably is) simply make the script executable via `chmod a+x livestreamcheck.py` if needed and execute it. The script should hook into your system's python install automatically. Windows folks: I'm still working on a better way to go about this, but you currently have to run `python3 livestreamcheck.py` from within cmd/powershell. If you've got ideas I'm happy to hear them.
 
 ## So how do we go about making this work?
 
 1. Download the script, put it in some location, and execute it to generate a dummy config file: `~/.config/livestreamcheck/config` that should read as follows:
 
-    ```config
+    ```ini
     [TwitchBits]
     userid = foo
     clientid = bar
@@ -42,7 +42,7 @@ Assuming Python is installed on your system (it proably is) simply make the scri
 3. Make an App and register it ("Register Your Application"):
     - Name: Can be anything you please, is not critical for our workflow.
     - OAuth Redirect URLs: Again, can be anything you please for this workflow, but the documentation assumes you have used `http://localhost:3000`
-    - Category: Arbritrary unless you're attempting to do this at a large scape. 'Other' and a description of what you're doing should be fine.
+    - Category: Arbitrary unless you're attempting to do this at a large scape. 'Other' and a description of what you're doing should be fine.
 
 4. Select 'Manage' for your newly created app and make note of the 'Client ID'. As you may have guessed this is what you want for the `clientid` value in the config file.
 
@@ -79,7 +79,7 @@ Assuming Python is installed on your system (it proably is) simply make the scri
     giantbomb8                                                    97
     ```
 
-9. Bask in a sense of self accomplsishment; maybe watch a stream or something. Note that every few hours the existing token you have should expire and no longer work. If this happens the script should detect it, attempt to refresh it automatically, and prompt you to re-run it. If this does not work, please verify the values in the config file.
+9. Bask in a sense of self accomplishment; maybe watch a stream or something. Note that every few hours the existing token you have should expire and no longer work. If this happens the script should detect it, attempt to refresh it automatically, and prompt you to re-run it. If this does not work, please verify the values in the config file.
 
 ## Hey, I'd like to have this hook into [Streamlink](https://github.com/streamlink/streamlink)
 
@@ -90,4 +90,4 @@ Buddy, I've got just the thing for you. If streamlink is installed on your syste
 - Implement debugging/logging/ect
 - ~~Investigate integration with [Streamlink](https://github.com/streamlink/streamlink)~~
 - Look into automated testing
-- Investigate the viablilty of packaging
+- Investigate the viability of packaging
