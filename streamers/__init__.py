@@ -1,1 +1,1 @@
-from streamers import streamers
+from .streamers import main

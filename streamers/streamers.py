@@ -112,7 +112,7 @@ def write_results(streams, streamLinkFlag):
             )
 
 
-def stream_link(streams):
+def stream_link(streams, locate):
     while True:
         try:
             maxSel = len(streams.json()["data"])
@@ -137,53 +137,53 @@ def stream_link(streams):
 # endregion
 
 # region main
-
-# region parser
-parser = argparse.ArgumentParser(
-    description="Get a list of followed Twitch live streams from the comfort of your own CLI."
-)
-parser.add_argument(
-    "-s",
-    "--streamlink",
-    action="store_true",
-    help="flag to enable streamlink functionality (if installed)",
-)
-args = parser.parse_args()
-# endregion
-# region config
-configDir = Path("~/.config/streamers").expanduser()
-configFile = Path("~/.config/streamers/config").expanduser()
-config = config_set(configDir, configFile)
-# endregion
-# Deadman's switch
-if config["TwitchBits"]["userID"] == "foo":
-    print("Quitting program. Please populate config file.")
-    quit()
-streams = query_streams(config)
-try:
-    if args.streamlink or config["StreamLinkBits"]["enabled"].lower() == "true":
-        streamLinkFlag = True
-    else:
-        streamLinkFlag = False
-except KeyError:
-    print("")
-    print(
-        "Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it."
+def main():
+    # region parser
+    parser = argparse.ArgumentParser(
+        description="Get a list of followed Twitch live streams from the comfort of your own CLI."
     )
-    quit()
-if streams.ok:
-    if len(streams.json()["data"]) > 0:
-        write_results(streams, streamLinkFlag)
-        locate = shutil.which("streamlink")
-        if locate and streamLinkFlag:
-            print("")
-            stream_link(streams)
+    parser.add_argument(
+        "-s",
+        "--streamlink",
+        action="store_true",
+        help="flag to enable streamlink functionality (if installed)",
+    )
+    args = parser.parse_args()
+    # endregion
+    # region config
+    configDir = Path("~/.config/streamers").expanduser()
+    configFile = Path("~/.config/streamers/config").expanduser()
+    config = config_set(configDir, configFile)
+    # endregion
+    # Deadman's switch
+    if config["TwitchBits"]["userID"] == "foo":
+        print("Quitting program. Please populate config file.")
+        quit()
+    streams = query_streams(config)
+    try:
+        if args.streamlink or config["StreamLinkBits"]["enabled"].lower() == "true":
+            streamLinkFlag = True
+        else:
+            streamLinkFlag = False
+    except KeyError:
+        print("")
+        print(
+            "Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it."
+        )
+        quit()
+    if streams.ok:
+        if len(streams.json()["data"]) > 0:
+            write_results(streams, streamLinkFlag)
+            locate = shutil.which("streamlink")
+            if locate and streamLinkFlag:
+                print("")
+                stream_link(streams, locate)
+        else:
+            print("No followed streams online at this time.")
     else:
-        print("No followed streams online at this time.")
-else:
-    print("Error getting stream data. Response code: " + str(streams.status_code))
-    refresh_token(configFile, config)
-    print("Attempting token refresh, please try again")
+        print("Error getting stream data. Response code: " + str(streams.status_code))
+        refresh_token(configFile, config)
+        print("Attempting token refresh, please try again")
 
 
 # endregion
