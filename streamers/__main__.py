@@ -1,2 +1,1 @@
-#!/usr/bin/env python3
-import streamers
+from streamers import streamers
