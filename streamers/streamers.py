@@ -14,7 +14,6 @@ def config_set(
     configDir, configPath
 ):  # Check if the config file is present, and if not create it with dummy values
     if not (configDir.is_dir()):
-        print("Creating config dir at: " + str(configDir))
         Path.mkdir(configDir, parents=True, exist_ok=True)
     if not (configPath.is_file()):
         print("Config file not found. Creating dummy file at: " + str(configPath))
@@ -138,6 +137,7 @@ def stream_link(streams):
 # endregion
 
 # region main
+
 # region parser
 parser = argparse.ArgumentParser(
     description="Get a list of followed Twitch live streams from the comfort of your own CLI."
@@ -151,8 +151,8 @@ parser.add_argument(
 args = parser.parse_args()
 # endregion
 # region config
-configDir = Path("~/.config/livestreamcheck").expanduser()
-configFile = Path("~/.config/livestreamcheck/config").expanduser()
+configDir = Path("~/.config/streamers").expanduser()
+configFile = Path("~/.config/streamers/config").expanduser()
 config = config_set(configDir, configFile)
 # endregion
 # Deadman's switch
@@ -171,7 +171,6 @@ except KeyError:
         "Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it."
     )
     quit()
-
 if streams.ok:
     if len(streams.json()["data"]) > 0:
         write_results(streams, streamLinkFlag)
@@ -185,4 +184,6 @@ else:
     print("Error getting stream data. Response code: " + str(streams.status_code))
     refresh_token(configFile, config)
     print("Attempting token refresh, please try again")
+
+
 # endregion

@@ -8,7 +8,7 @@ Twitch doesn't provide a readily available method to pull down followed stream s
 
 ## Installation
 
-Simply clone down or save the livestreamcheck.py script to your system, preferably in a location on your System Path. If not already present, install the requests library via the command below or via `pip install -r requirements.txt`.
+Simply clone down or save the streamers.py script to your system, preferably in a location on your System Path. If not already present, install the requests library via the command below or via `pip install -r requirements.txt`.
 
 ## Script Requirements
 
@@ -19,11 +19,11 @@ Simply clone down or save the livestreamcheck.py script to your system, preferab
 
 ## Execution
 
-Assuming Python is installed on your system (it probably is) simply make the script executable via `chmod a+x livestreamcheck.py` if needed and execute it. The script should hook into your system's python install automatically. Windows folks: I'm still working on a better way to go about this, but you currently have to run `python3 livestreamcheck.py` from within cmd/powershell. If you've got ideas I'm happy to hear them.
+Assuming Python is installed on your system (it probably is) simply make the script executable via `chmod a+x streamers.py` if needed and execute it. The script should hook into your system's python install automatically. Windows folks: I'm still working on a better way to go about this, but you currently have to run `python3 streamers.py` from within cmd/powershell. If you've got ideas I'm happy to hear them.
 
 ## So how do we go about making this work?
 
-1. Download the script, put it in some location, and execute it to generate a dummy config file: `~/.config/livestreamcheck/config` that should read as follows:
+1. Download the script, put it in some location, and execute it to generate a dummy config file: `~/.config/streamers/config` that should read as follows:
 
     ```ini
     [TwitchBits]

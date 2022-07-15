@@ -1,1 +1,1 @@
-import streamers
+from streamers import streamers
