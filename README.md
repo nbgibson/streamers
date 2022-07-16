@@ -4,26 +4,36 @@ A CLI tool inspired by [begs's](https://github.com/begs) [livestreamers](https:/
 
 ## Ok, so what's the deal here?
 
-Twitch doesn't provide a readily available method to pull down followed stream status via CLI so we need to set up a method to get at the data and display it in a easy to read fashion. This script performs that pretty well (though I'm not an impartial source), but setting up this data and so forth automatically is a bit beyond the current scope of the program and my personal scope of "things I'm willing to put up with"&trade;. So you're going to want to read the docs, though you're doing that already. Good for you.
+Twitch doesn't provide a readily available method to pull down followed stream status via CLI so we need to set up a method to get at the data and display it in a easy to read fashion. This package performs that pretty well (though I'm not an impartial source), but setting up this data and so forth automatically is a bit beyond the current scope of the program and my personal scope of "things I'm willing to put up with"&trade;. So you're going to want to read the docs, though you're doing that already. Good for you.
 
 ## Installation
 
-Simply clone down or save the streamers.py script to your system, preferably in a location on your System Path. If not already present, install the requests library via the command below or via `pip install -r requirements.txt`.
+The application is now available in ~~pog~~ package form [via pip](https://pypi.org/project/streamers/)! Simply install via:
 
-## Script Requirements
+```bash
+pip install streamers
+```
+
+## Package Requirements
 
 - An existing Twitch account
 - Some flavor of Python3
-- The Python requests library: `pip install --user requests` || `pip install -r requirements.txt`
+- The Python requests library: 2.26.0 or newer
 - An Internet connection
 
 ## Execution
 
-Assuming Python is installed on your system (it probably is) simply make the script executable via `chmod a+x streamers.py` if needed and execute it. The script should hook into your system's python install automatically. Windows folks: I'm still working on a better way to go about this, but you currently have to run `python3 streamers.py` from within cmd/powershell. If you've got ideas I'm happy to hear them.
+Once installed via pip, the package should be present on your system's PATH and can be called via:
 
-## So how do we go about making this work?
+```bash
+streamers
+```
 
-1. Download the script, put it in some location, and execute it to generate a dummy config file: `~/.config/streamers/config` that should read as follows:
+If you recieve errors that the command is not known, please ensure that the install location (hint: `pip list -v`) is included on your system's PATH. Please consult your preferred search engine on how to accomplish this if needed.
+
+## So how do we go about getting the data to make this work?
+
+1. Once installed, execute the package to generate a dummy config file: `~/.config/streamers/config` that should read as follows:
 
     ```ini
     [TwitchBits]
@@ -79,7 +89,7 @@ Assuming Python is installed on your system (it probably is) simply make the scr
     giantbomb8                                                    97
     ```
 
-9. Bask in a sense of self accomplishment; maybe watch a stream or something. Note that every few hours the existing token you have should expire and no longer work. If this happens the script should detect it, attempt to refresh it automatically, and prompt you to re-run it. If this does not work, please verify the values in the config file.
+9. Bask in a sense of self accomplishment; maybe watch a stream or something. Note that every few hours the existing token you have should expire and no longer work. If this happens the package should detect it, attempt to refresh it automatically, and prompt you to re-run it. If this does not work, please verify the values in the config file.
 
 ## Hey, I'd like to have this hook into [Streamlink](https://github.com/streamlink/streamlink)
 
@@ -90,4 +100,4 @@ Buddy, I've got just the thing for you. If streamlink is installed on your syste
 - Implement debugging/logging/ect
 - ~~Investigate integration with [Streamlink](https://github.com/streamlink/streamlink)~~
 - Look into automated testing
-- Investigate the viability of packaging
+- ~~Investigate the viability of packaging~~
