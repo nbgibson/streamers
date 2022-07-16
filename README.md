@@ -101,3 +101,4 @@ Buddy, I've got just the thing for you. If streamlink is installed on your syste
 - ~~Investigate integration with [Streamlink](https://github.com/streamlink/streamlink)~~
 - Look into automated testing
 - ~~Investigate the viability of packaging~~
+- Terrible horrible godawful in CLI streams
