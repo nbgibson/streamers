@@ -2,15 +2,15 @@
 
 # region honeydo_list
 
-#TODO: IINA Support
-#TODO: Spin out VLC integration into it's own thing; let SL stand alone
-#TODO: Add '?' flag to mirror 'h' flag behavior
-#TODO: MPV support?
-#TODO: 's' flag passed without Streamlink installed doesn't prompt with an error message.
-#TODO: See if there is a way to make config file changes backwards compatible
-#TODO: Make token refresh silent without a verbosity flag, auto rerun if token refresh is successful.
-#TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
-#TODO: Documentation rework for pypi visibility. Github isn't really the focus now. Look into split documentation?
+# TODO: IINA Support
+# TODO: Spin out VLC integration into it's own thing; let SL stand alone
+# TODO: Add '?' flag to mirror 'h' flag behavior
+# TODO: MPV support?
+# TODO: 's' flag passed without Streamlink installed doesn't prompt with an error message.
+# TODO: See if there is a way to make config file changes backwards compatible
+# TODO: Make token refresh silent without a verbosity flag, auto rerun if token refresh is successful.
+# TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
+# TODO: Documentation rework for pypi visibility. Github isn't really the focus now. Look into split documentation?
 
 # endregion
 
@@ -25,6 +25,8 @@ import argparse
 # endregion
 
 # region functions
+
+
 def config_set(
     configDir, configPath
 ):  # Check if the config file is present, and if not create it with dummy values
@@ -77,7 +79,8 @@ def refresh_token(configPath, config):
         + "&client_secret="
         + config["TwitchBits"]["clientSecret"]
     )
-    r = requests.post("https://id.twitch.tv/oauth2/token", headers=headers, data=data)
+    r = requests.post("https://id.twitch.tv/oauth2/token",
+                      headers=headers, data=data)
     config.set("TwitchBits", "access_token", r.json()["access_token"])
     with open(configPath, "w") as configfile:
         config.write(configfile)
@@ -196,7 +199,8 @@ def main():
         else:
             print("No followed streams online at this time.")
     else:
-        print("Error getting stream data. Response code: " + str(streams.status_code))
+        print("Error getting stream data. Response code: " +
+              str(streams.status_code))
         refresh_token(configFile, config)
         print("Attempting token refresh, please try again")
 
