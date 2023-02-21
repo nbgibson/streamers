@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+
+# region honeydo_list
+
+#TODO: IINA Support
+#TODO: Spin out VLC integration into it's own thing; let SL stand alone
+#TODO: Add '?' flag to mirror 'h' flag behavior
+#TODO: MPV support?
+#TODO: 's' flag passed without Streamlink installed doesn't prompt with an error message.
+#TODO: See if there is a way to make config file changes backwards compatible
+#TODO: Make token refresh silent without a verbosity flag, auto rerun if token refresh is successful.
+#TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
+#TODO: Documentation rework for pypi visibility. Github isn't really the focus now. Look into split documentation?
+
+# endregion
+
 # regions imports
 import os
 import configparser  # Config fun
