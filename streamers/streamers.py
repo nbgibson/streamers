@@ -151,23 +151,26 @@ def stream_link(streams, locate):
     streamer = streams.json()["data"][index]["user_name"]
     os.system(locate + " https://twitch.tv/" + streamer)
 
+def config_args():
+    parser = argparse.ArgumentParser(
+        prog = 'Streamers',
+        description="Get a list of followed Twitch live streams from the comfort of your own CLI and optionall stream them."
+    )
+    parser.add_argument(
+        "-p",
+        "--player",
+        choices=['streamlink','vlc','iina','mpv'],
+        help="Pass in your preferred player if desired. Available options: Streamlink, VLC, IINA, and MPV. Presumes you have the passed player installed and configured to take inputs via CLI.",
+    )
+    args = parser.parse_args()
+    return args
+
 
 # endregion
 
 # region main
 def main():
-    # region parser
-    parser = argparse.ArgumentParser(
-        description="Get a list of followed Twitch live streams from the comfort of your own CLI."
-    )
-    parser.add_argument(
-        "-s",
-        "--streamlink",
-        action="store_true",
-        help="flag to enable streamlink functionality (if installed)",
-    )
-    args = parser.parse_args()
-    # endregion
+    args = config_args()
     # region config
     configDir = Path("~/.config/streamers").expanduser()
     configFile = Path("~/.config/streamers/config").expanduser()
@@ -179,8 +182,9 @@ def main():
         quit()
     streams = query_streams(config)
     try:
-        if args.streamlink or config["StreamLinkBits"]["enabled"].lower() == "true":
+        if args.player == 'streamlink' or config["StreamLinkBits"]["enabled"].lower() == "true":
             streamLinkFlag = True
+            print("Streamlink enabled")
         else:
             streamLinkFlag = False
     except KeyError:
@@ -203,6 +207,5 @@ def main():
               str(streams.status_code))
         refresh_token(configFile, config)
         print("Attempting token refresh, please try again")
-
 
 # endregion
