@@ -86,8 +86,8 @@ def refresh_token(configPath, config):
         config.write(configfile)
 
 
-def write_results(streams, streamLinkFlag):
-    if streamLinkFlag:
+def write_results(streams, playerFlag):
+    if playerFlag != None:
         index = 0
         print(
             "\nINDEX   CHANNEL "
@@ -129,7 +129,6 @@ def write_results(streams, streamLinkFlag):
                 )
             )
 
-
 def stream_link(streams, locate):
     while True:
         try:
@@ -159,12 +158,54 @@ def config_args():
     parser.add_argument(
         "-p",
         "--player",
-        choices=['streamlink','vlc','iina','mpv'],
+        required=False,
+        choices=['streamlink','iina','mpv'],
         help="Pass in your preferred player if desired. Available options: Streamlink, VLC, IINA, and MPV. Presumes you have the passed player installed and configured to take inputs via CLI.",
+    )
+    parser.add_argument(
+        "-a",
+        "--arguments",
+        required=False,
+        default='',
+        help="Optionally pass arguments to be used with your player"
     )
     args = parser.parse_args()
     return args
 
+def player_output(player, streams, args):
+    while True:
+        try:
+            maxSel = len(streams.json()["data"])
+            index = -1
+            while index not in range(0, maxSel):
+                index = int(input("Enter index of stream to watch: "))
+        except ValueError:
+            print(
+                "Sorry, I didn't understand that. Enter an integer from 0 to "
+                + str(maxSel - 1)
+            )
+            continue
+        except KeyboardInterrupt:
+            quit()
+        else:
+            break
+    stream = streams.json()["data"][index]["user_name"]
+    start_player(stream, args)
+
+def start_player(stream, args):
+    #try catch to verify the selected player is installed/PATH accessable
+    playerPath = shutil.which(args.player)
+    if playerPath != None:
+        #Start stream
+        print("Starting stream")
+        if args.player == "mpv":
+            os.system(playerPath + " " + args.arguments + " https://twitch.tv/" + stream)
+
+    else:
+        print(args.player + " is either not installed or on the system's PATH. Please verify that it is present and retry.")
+    
+    #os.system(playerPath + " https://twitch.tv/" + streamer)
+    #print("Player: :" + args.player + "\n playerPath + " + playerPath)
 
 # endregion
 
@@ -176,30 +217,16 @@ def main():
     configFile = Path("~/.config/streamers/config").expanduser()
     config = config_set(configDir, configFile)
     # endregion
-    # Deadman's switch
     if config["TwitchBits"]["userID"] == "foo":
         print("Quitting program. Please populate config file.")
         quit()
     streams = query_streams(config)
-    try:
-        if args.player == 'streamlink' or config["StreamLinkBits"]["enabled"].lower() == "true":
-            streamLinkFlag = True
-            print("Streamlink enabled")
-        else:
-            streamLinkFlag = False
-    except KeyError:
-        print("")
-        print(
-            "Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it."
-        )
-        quit()
+    
     if streams.ok:
         if len(streams.json()["data"]) > 0:
-            write_results(streams, streamLinkFlag)
-            locate = shutil.which("streamlink")
-            if locate and streamLinkFlag:
-                print("")
-                stream_link(streams, locate)
+            write_results(streams, args.player)
+            if args.player != None:
+                player_output(args.player, streams, args)
         else:
             print("No followed streams online at this time.")
     else:
@@ -207,5 +234,39 @@ def main():
               str(streams.status_code))
         refresh_token(configFile, config)
         print("Attempting token refresh, please try again")
+    
+
+
+#streamlink --json twitch.tv/unlimitedsteam | jq -r '.streams.best.url'
+#vlc --meta-title "butts" --video-title "butts" https://video-weaver.atl01.hls.ttvnw.net/v1/playlist/Cq0EgR_ErttiWkmiXFt6s7x_dRji9NBVDzN2s97SZIPxBCmh7JG5aAR-Fb4Hy4ZVUHs5ZdbCCkIBPKJO44GFanlD56O3W8sCZBeNgEmcG2sHd8t2WPOEiVlmp9J9OR60Mqd3vhNeVPhTgzzWzu12_QHtpaqmTHgV6l_v-ZBRfW8r0MZjbGYdHooLW2Puhu1CCYvBcEydAs8rREJKVIDLPj4169ovaNDICE7yRQ_anYpTyuOBmlBwMb-49n4XXZgGrdOHco4vmFblYJaB_fqVzpErd8jM1bJHg3iqNkeGuc0DGFLfW6K1Xm6NA3QMMUHgON_QLO-XoDIfuDf2IB-dkR8OaJErRmMWbRITqw64y2o7rB4WefoYcuQLngE1duUhVUsl8p0Qa0WLFs01tjThZohyISsNAOZaaesx-hANQnZQXlCBYbg7BVbQjOQTB0OMTHez79EbHCptxIruAklnvNjVdON6uPaT5nCcwn5sGhABWFyQtzih0AVzzSDVY5v5bzYS-EvuHr1iMUvWSfJKgjMNoqsX3yPzQeLHxtcwCgKvScvLwAGgQ1JgIUhcL3YMtP1C7ttQRSeQwYvsDxZnesI5xZQof8DHcjh_dFpiT8pOTKDZjix_xQoFlyhq0hRhsng0hgpPpf260EYbU1g-LSh2862JQa4lG7RkGqTgXWdGphWGGX9h2AWkC-aq5ReCQgMinaMmswleNYI8W_7sYV68AIfXx_wmvzFxrSr5Bv8aDEHgLltMofkYVMANACABKgl1cy13ZXN0LTIw-AU.m3u 
+    
+    
+    
+#    try:
+#        if args.player == 'streamlink' or config["StreamLinkBits"]["enabled"].lower() == "true":
+#            streamLinkFlag = True
+#            print("Streamlink enabled")
+#        else:
+#            streamLinkFlag = False
+#    except KeyError:
+#        print("")
+#        print(
+#            "Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it."
+#        )
+#        quit()
+#    if streams.ok:
+#        if len(streams.json()["data"]) > 0:
+#            write_results(streams, streamLinkFlag)
+#            locate = shutil.which("streamlink")
+#            if locate and streamLinkFlag:
+#                print("")
+#                stream_link(streams, locate)
+#        else:
+#            print("No followed streams online at this time.")
+#    else:
+#        print("Error getting stream data. Response code: " +
+#              str(streams.status_code))
+#        refresh_token(configFile, config)
+#        print("Attempting token refresh, please try again")
 
 # endregion
