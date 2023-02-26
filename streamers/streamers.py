@@ -2,11 +2,8 @@
 
 # region honeydo_list
 
-# TODO: IINA Support
 # TODO: Spin out VLC integration into it's own thing; let SL stand alone
 # TODO: Add '?' flag to mirror 'h' flag behavior
-# TODO: MPV support?
-# TODO: 's' flag passed without Streamlink installed doesn't prompt with an error message.
 # TODO: See if there is a way to make config file changes backwards compatible
 # TODO: Make token refresh silent without a verbosity flag, auto rerun if token refresh is successful.
 # TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
@@ -55,7 +52,6 @@ def config_set(
         config.read(configPath)
     return config
 
-
 def query_streams(config):
     headers = {
         "Authorization": "Bearer " + config["TwitchBits"]["access_token"],
@@ -66,7 +62,6 @@ def query_streams(config):
         "https://api.twitch.tv/helix/streams/followed", params=data, headers=headers
     )
     return r
-
 
 def refresh_token(configPath, config):
     print("Renewing Token...")
@@ -84,7 +79,6 @@ def refresh_token(configPath, config):
     config.set("TwitchBits", "access_token", r.json()["access_token"])
     with open(configPath, "w") as configfile:
         config.write(configfile)
-
 
 def write_results(streams, playerFlag):
     if playerFlag != None:
@@ -160,15 +154,18 @@ def config_args():
         "--player",
         required=False,
         choices=['streamlink','iina','mpv'],
-        help="Pass in your preferred player if desired. Available options: Streamlink, VLC, IINA, and MPV. Presumes you have the passed player installed and configured to take inputs via CLI.",
+        help="Pass in your preferred player if desired. Available options: Streamlink, IINA, and MPV. Presumes you have the passed player installed and configured to take inputs via CLI.",
     )
     parser.add_argument(
         "-a",
         "--arguments",
         required=False,
+        type=str,
+        action='store',
         default='',
-        help="Optionally pass arguments to be used with your player"
+        help="Optionally pass arguments to be used with your player. HINT: Use the format: -a=\"--optional-arguments\" to pass in content with dashes so as to not conflict with argparse's parsing."
     )
+    
     args = parser.parse_args()
     return args
 
@@ -198,8 +195,11 @@ def start_player(stream, args):
     if playerPath != None:
         #Start stream
         print("Starting stream")
-        if args.player == "mpv":
+        if args.player == "mpv" or args.player == "streamlink" or args.player == "iina":
+            print("Starting " + args.player + " with command: " + playerPath + " " + args.arguments + " https://twitch.tv/" + stream)
             os.system(playerPath + " " + args.arguments + " https://twitch.tv/" + stream)
+        elif args.player == "vlc":
+            print("foo")
 
     else:
         print(args.player + " is either not installed or on the system's PATH. Please verify that it is present and retry.")
