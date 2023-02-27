@@ -43,8 +43,9 @@ If you recieve errors that the command is not known, please ensure that the inst
    refreshtoken = buzz
    clientsecret = fizzbuzz
 
-   [StreamLinkBits]
-   enabled = false
+   [PlayerBits]
+   player=
+   arguments=
    ```
 
 2. Head on over to the [Twitch developer console](https://dev.twitch.tv/console) and make an account ([docs](https://dev.twitch.tv/docs/authentication/register-app)) if you do not already have one.
