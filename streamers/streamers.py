@@ -2,8 +2,7 @@
 
 # region honeydo_list
 
-# TODO: Set up config file structure to use player and args data
-# TODO: Set user passed CLI flags to override config file settings
+
 # TODO: See if there is a way to make config file changes backwards compatible
 # TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
 # TODO: Documentation rework for pypi visibility. Github isn't really the focus now. Look into split documentation?
@@ -88,7 +87,7 @@ def refresh_token(configPath, config):
 
 def write_results(streams, playerFlag):
     if len(streams.json()["data"]) > 0:
-        if playerFlag != None:
+        if playerFlag != False:
             index = 0
             print(
                 "\nINDEX   CHANNEL "
@@ -148,8 +147,9 @@ def config_args():
         "-p",
         "--player",
         required=False,
+        default="",
         choices=['iina', 'mpv', 'streamlink', 'vlc'],
-        help="Pass in your preferred player if desired. Available options: Streamlink, IINA, and MPV. Presumes you have the passed player installed and configured to take inputs via CLI.",
+        help="Pass in your preferred player if desired. Available options: IINA, MPV, Streamlink, and VLC. Presumes you have the passed player installed and configured to take inputs via CLI. NOTE: CLI passed selections will override config file settngs for player, if any.",
     )
     parser.add_argument(
         "-a",
@@ -158,7 +158,7 @@ def config_args():
         type=str,
         action='store',
         default='',
-        help="Optionally pass arguments to be used with your player. HINT: Use the format: -a=\"--optional-arguments\" to pass in content with dashes so as to not conflict with argparse's parsing."
+        help="Optionally pass arguments to be used with your player. HINT: Use the format: -a=\"--optional-arguments\" to pass in content with dashes so as to not conflict with argparse's parsing. WARNING: Can only be used with the -p/--player flag. Config file player arguments are seperate."
     )
 
     args = parser.parse_args()
@@ -228,10 +228,23 @@ def main():
         logging.debug("Attempting token refresh.")
         refresh_token(configFile, config)
 
+    logging.debug("Config player setting: "  + str(config["PlayerBits"]["player"]))
+    logging.debug("CLI passed player value: " + str(args.player))
+
+    if args.player != "" or config["PlayerBits"]["player"] != "":
+        playerFlag = True
+        logging.debug("Config player value: " + config["PlayerBits"]["player"])
+        logging.debug("playerFlag value: " + str(playerFlag))
+    else:
+        playerFlag = False
+        logging.debug("Setting playerFlag to false.")
+
     if streams.ok:
-        write_results(streams, args.player)
-        if args.player != None:
+        write_results(streams, playerFlag)
+        if args.player != "":
             player_output(args.player, streams, args)
+        elif not config["PlayerBits"]["player"] == "":
+            player_output(config["PlayerBits"]["player"], streams, config["PlayerBits"]["arguments"])
     else:
         print("Error getting stream data. Response code: " +
               str(streams.status_code))
