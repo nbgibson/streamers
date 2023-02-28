@@ -194,7 +194,7 @@ def refresh_token(config_path: Path, config: ConfigParser) -> None:
         config.write(config_file)
 
 
-def write_results(streams: Dict[str, Any], player_config: Dict[str, Any]) -> bool:
+def write_results(streams: Dict[str, Any], player_config: Dict[str, Any] = {}) -> bool:
     """
     Prints the status of our subscribed Twitch channels to console.
 
@@ -212,7 +212,7 @@ def write_results(streams: Dict[str, Any], player_config: Dict[str, Any]) -> boo
             )
 
     if len(streams["data"]) > 0:
-        if player_config["playerFlag"] != False:
+        if player_config.get("playerFlag", None):
             index = 0
             print(table_header)
             for stream in streams["data"]:
