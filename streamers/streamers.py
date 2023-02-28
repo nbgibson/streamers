@@ -2,7 +2,7 @@
 
 # region honeydo_list
 
-
+# TODO: See if the onbolarding process can be somewhat autoamted
 # TODO: See if there is a way to make config file changes backwards compatible
 # TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
 # TODO: Documentation rework for pypi visibility. Github isn't really the focus now. Look into split documentation?
@@ -24,10 +24,11 @@ import logging
 # region functions
 
 
-def config_set(configDir, configPath):  
-    if not (configDir.is_dir()): # Check if the config dir is present, and if not create it 
+def config_set(configDir, configPath):
+    if not (configDir.is_dir()):  # Check if the config dir is present, and if not create it
         Path.mkdir(configDir, parents=True, exist_ok=True)
-    if not (configPath.is_file()): # Check if the config file is present, and if not create it with dummy values
+    # Check if the config file is present, and if not create it with dummy values
+    if not (configPath.is_file()):
         print("Config file not found. Creating dummy file at: " + str(configPath))
         config = configparser.ConfigParser()
         Path(configPath).touch()
@@ -53,6 +54,71 @@ def config_set(configDir, configPath):
         config = configparser.RawConfigParser()
         config.read(configPath)
     return config
+
+
+def config_args():
+    parser = argparse.ArgumentParser(
+        prog='Streamers',
+        description="Get a list of followed Twitch live streams from the comfort of your own CLI and optionall stream them."
+    )
+    parser.add_argument(
+        '-l',
+        '--logging',
+        help="Adds additional output/verbosity for troublshooting.",
+        action="store_true"
+    )
+    parser.add_argument(
+        "-p",
+        "--player",
+        required=False,
+        default="",
+        choices=['iina', 'mpv', 'streamlink', 'vlc'],
+        help="Pass in your preferred player if desired. Available options: IINA, MPV, Streamlink, and VLC. Presumes you have the passed player installed and configured to take inputs via CLI. NOTE: CLI passed selections will override config file settngs for player, if any.",
+    )
+    parser.add_argument(
+        "-a",
+        "--arguments",
+        required=False,
+        type=str,
+        action='store',
+        # default='',
+        help="Optionally pass arguments to be used with your player. HINT: Use the format: -a=\"--optional-arguments\" to pass in content with dashes so as to not conflict with argparse's parsing. WARNING: Can only be used with the -p/--player flag. Config file player arguments are seperate."
+    )
+
+    args = parser.parse_args()
+    return args
+
+
+def session_vars(config, args):
+    sessionFlags = {
+        "player": "",
+        "playerFlag": False,
+        "arguments": ""
+    }
+    """ 
+        Check to see if a player has been selected in the config file and then assign it if so.
+        Then, check if a player argument has been passed as an argument. If so, override the config file setting.
+    """
+    if not config["PlayerBits"]["player"] == "":
+        sessionFlags["player"] = config["PlayerBits"]["player"]
+        sessionFlags["playerFlag"] = True
+    if not args.player == "":
+        sessionFlags["player"] = args.player
+        sessionFlags["playerFlag"] = True
+
+    """
+        This is slightly more complex. As before we default to pulling in the config file values. However, if a user passes a player via CLI, we nullify those default
+        values as we don't want users crossing the streams in terms of arguments. This allows for just a player to be passed via CLI with no args to be run as default
+        when the config file contains values. Finally we override again should there be a passed argument value from CLI.
+    """
+    if not config["PlayerBits"]["arguments"] == "":
+        sessionFlags["arguments"] = config["PlayerBits"]["arguments"]
+    if not args.player == "":
+        sessionFlags["arguments"] = ""
+    if not args.arguments == None:
+        sessionFlags["arguments"] = args.arguments
+
+    return sessionFlags
 
 
 def query_streams(config):
@@ -85,9 +151,9 @@ def refresh_token(configPath, config):
         config.write(configfile)
 
 
-def write_results(streams, playerFlag):
+def write_results(streams, player_config):
     if len(streams.json()["data"]) > 0:
-        if playerFlag != False:
+        if player_config["playerFlag"] != False:
             index = 0
             print(
                 "\nINDEX   CHANNEL "
@@ -132,40 +198,7 @@ def write_results(streams, playerFlag):
         print("No followed streams online at this time.")
 
 
-def config_args():
-    parser = argparse.ArgumentParser(
-        prog='Streamers',
-        description="Get a list of followed Twitch live streams from the comfort of your own CLI and optionall stream them."
-    )
-    parser.add_argument(
-        '-l',
-        '--logging',
-        help="Adds additional output/verbosity for troublshooting.",
-        action="store_true"
-    )
-    parser.add_argument(
-        "-p",
-        "--player",
-        required=False,
-        default="",
-        choices=['iina', 'mpv', 'streamlink', 'vlc'],
-        help="Pass in your preferred player if desired. Available options: IINA, MPV, Streamlink, and VLC. Presumes you have the passed player installed and configured to take inputs via CLI. NOTE: CLI passed selections will override config file settngs for player, if any.",
-    )
-    parser.add_argument(
-        "-a",
-        "--arguments",
-        required=False,
-        type=str,
-        action='store',
-        default='',
-        help="Optionally pass arguments to be used with your player. HINT: Use the format: -a=\"--optional-arguments\" to pass in content with dashes so as to not conflict with argparse's parsing. WARNING: Can only be used with the -p/--player flag. Config file player arguments are seperate."
-    )
-
-    args = parser.parse_args()
-    return args
-
-
-def player_output(player, streams, args):
+def player_selection(player_config, streams):
     while True:
         try:
             maxSel = len(streams.json()["data"])
@@ -183,68 +216,69 @@ def player_output(player, streams, args):
         else:
             break
     stream = streams.json()["data"][index]["user_name"]
-    start_player(stream, args)
+    start_player(stream, player_config)
 
 
-def start_player(stream, args):
-    playerPath = shutil.which(args.player)
+def start_player(stream, player_config):
+    playerPath = shutil.which(player_config["player"])
     if playerPath != None:
         # Start stream
         print("----------Starting stream----------")
-        if args.player == "mpv" or args.player == "streamlink" or args.player == "iina":
-            logging.debug("Starting " + args.player + " with command: " + playerPath +
-                  " " + args.arguments + " https://twitch.tv/" + stream)
-            os.system(playerPath + " " + args.arguments +
+        if player_config["player"] == "mpv" or player_config["player"] == "streamlink" or player_config["player"] == "iina":
+            logging.debug("Starting " + player_config["player"] + " with command: " + playerPath +
+                          " " + player_config["arguments"] + " https://twitch.tv/" + stream)
+            os.system(playerPath + " " + player_config["arguments"] +
                       " https://twitch.tv/" + stream)
-        elif args.player == "vlc":
+        elif player_config["player"] == "vlc":
             streams = streamlink.streams("https://twitch.tv/" + stream)
-            logging.debug("Starting " + args.player + " with command: " +
-                  playerPath + " " + args.arguments + " " + streams["best"].url)
+            logging.debug("Starting " + player_config["player"] + " with command: " +
+                          playerPath + " " + player_config["arguments"] + " " + streams["best"].url)
             os.system(playerPath + " --meta-title \"" + stream + "\" --video-title \"" +
-                      stream + "\" " + args.arguments + " " + streams["best"].url)
+                      stream + "\" " + player_config["arguments"] + " " + streams["best"].url)
 
     else:
-        print(args.player + " is either not installed or on the system's PATH. Please verify that it is present and retry.")
+        print(player_config["player"] +
+              " is either not installed or on the system's PATH. Please verify that it is present and retry.")
 
 # endregion
 
 # region main
 
+
 def main():
     args = config_args()
     if args.logging:
-        logging.basicConfig(format='DEBUG: %(message)s',level=logging.DEBUG)
+        logging.basicConfig(format='DEBUG: %(message)s', level=logging.DEBUG)
     # region config
     configDir = Path("~/.config/streamers").expanduser()
     configFile = Path("~/.config/streamers/config").expanduser()
     config = config_set(configDir, configFile)
-    # endregion
     if config["TwitchBits"]["userID"] == "foo":
         print("Quitting program. Please populate config file.")
         quit()
+    # endregion
+    player_config = session_vars(config, args)
+
     streams = query_streams(config)
 
     if not streams.ok:
         logging.debug("Attempting token refresh.")
         refresh_token(configFile, config)
-
-    logging.debug("Config player setting: "  + str(config["PlayerBits"]["player"]))
-    logging.debug("CLI passed player value: " + str(args.player))
-
-    if args.player != "" or config["PlayerBits"]["player"] != "":
-        playerFlag = True
-        logging.debug("Config player value: " + config["PlayerBits"]["player"])
-        logging.debug("playerFlag value: " + str(playerFlag))
-    else:
-        playerFlag = False
-        logging.debug("Setting playerFlag to false.")
+        streams = query_streams(config)
+    # region logging
+    logging.debug("Config file player settings:\n Player: " +
+                  config["PlayerBits"]["player"] + "\n Arguments: " + config["PlayerBits"]["arguments"])
+    logging.debug("Argparse player settings: \n Player: " +
+                  args.player + "\n Arguments: " + str(args.arguments))
+    logging.debug("Player setting: " + player_config["player"])
+    logging.debug("Player arguments: " + player_config["arguments"])
+    logging.debug("playerFlag: " + str(player_config["playerFlag"]))
+    # endregion
 
     if streams.ok:
-        write_results(streams, playerFlag)
-        if args.player != "":
-            player_output(args.player, streams, args)
-        elif not config["PlayerBits"]["player"] == "":
-            player_output(config["PlayerBits"]["player"], streams, config["PlayerBits"]["arguments"])
+        write_results(streams, player_config)
+        if player_config["playerFlag"] != False:
+            player_selection(player_config, streams)
     else:
         print("Error getting stream data. Response code: " +
               str(streams.status_code))
