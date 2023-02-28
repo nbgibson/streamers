@@ -11,7 +11,7 @@
 
 # region imports
 import os
-import configparser  # Config fun
+from configparser import ConfigParser  # Config fun
 import requests  # API fun
 from pathlib import Path
 import shutil  # Player install check
@@ -24,36 +24,61 @@ from typing import List, Dict, Optional, Any, Tuple, Union
 
 # region functions
 
+CONFIG_SCHEMA: Dict[str, Dict[str, str]] = {
+    "TwitchBits": {
+        "userID": "foo",
+        "clientID": "bar",
+        "access_token": "fizz",
+        "refreshToken": "buzz",
+        "clientSecret": "fizzbuzz",
+    },
+    "PlayerBits": {
+        "player": "",
+        "arguments": ""
+    }
+}
 
-def config_set(config_dir: Path, config_path: Path) -> Union[configparser.ConfigParser, configparser.RawConfigParser]:
-    if not config_dir.is_dir():  # Check if the config dir is present, and if not create it
-        Path.mkdir(config_dir, parents=True, exist_ok=True)
+def config_set(config_path: Path) -> ConfigParser:
+    """
+    Load our config file as described in `CONFIG_SCHEMA`. If this file does not
+    exist, attempt to create the file and inform the user that they need to
+    perform configuration as described in the README.
+
+    :params config_path: A path object pointing at our configuration file. In
+    the event only a directory is specified then this will default to
+    `$directory/config`.
+    """
+    if not config_path:
+        raise RuntimeError("Configuration file not specified!")
+
+    # Checks if our config path is a directory,
+    # if it is a directory, default to a file named 'config'
+    config_file = ""
+    if config_path.is_dir():  # Check if the config dir is present, and if not create it
+        Path.mkdir(config_path, parents=True, exist_ok=True)
+        config_file = "config"
+
+    # If our specified file doesn't exist, mkdir our directory
+    if not config_path.exists():
+        Path.mkdir(Path(os.path.dirname(config_path)), parents=True, exist_ok=True)
+
+    config_filepath = Path(os.path.join(config_path, config_file))
+
     # Check if the config file is present, and if not create it with dummy values
-    if not config_path.is_file():
-        print("Config file not found. Creating dummy file at: " + str(config_path))
-        config = configparser.ConfigParser()
-        Path(config_path).touch()
-        config["TwitchBits"] = {
-            "userID": "foo",
-            "clientID": "bar",
-            "access_token": "fizz",
-            "refreshToken": "buzz",
-            "clientSecret": "fizzbuzz",
-        }
-        config["PlayerBits"] = {
-            "player": "",
-            "arguments": ""
-        }
-        with open(config_path, "w") as config_file:
-            config.write(config_file)
+    if not config_filepath.is_file():
+        print(f"Config file not found. Creating dummy file at: {config_filepath}")
+        config = ConfigParser()
+        config.read_dict(CONFIG_SCHEMA)
+        with open(config_filepath, "w", encoding="utf-8") as file:
+            config.write(file)
         print(
             "Please refer to the documentation to get guidance on how to generate the needed values for the config file."
         )
+        exit(1)
     # TODO: Check for player section, add if needed
-    else:
-        # Populate vars
-        config = configparser.RawConfigParser()
-        config.read(config_path)
+    # Populate vars
+    config = ConfigParser(interpolation=None)
+    config.read(config_filepath)
     return config
 
 
@@ -134,7 +159,7 @@ def query_streams(config: Dict[str, Any]) -> Tuple[bool, int, Dict[str, Any]]:
     return r.ok, r.status_code, r.json()
 
 
-def refresh_token(config_path, config) -> None:
+def refresh_token(config_path: Path, config: ConfigParser) -> None:
     logging.debug("Renewing Token...")
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {
@@ -146,7 +171,7 @@ def refresh_token(config_path, config) -> None:
     r = requests.post("https://id.twitch.tv/oauth2/token",
                       headers=headers, data=data)
     config.set("TwitchBits", "access_token", r.json()["access_token"])
-    with open(config_path, "w") as config_file:
+    with open(config_path, "w", encoding="utf-8") as config_file:
         config.write(config_file)
 
 
@@ -244,8 +269,9 @@ def main():
         logging.basicConfig(format='DEBUG: %(message)s', level=logging.DEBUG)
     # region config
     config_dir = Path("~/.config/streamers").expanduser()
-    config_file = Path("~/.config/streamers/config").expanduser()
-    config = config_set(config_dir, config_file)
+    config_file = "config"
+    config_filepath = config_dir + config_file
+    config = config_set(config_filepath)
     if config["TwitchBits"]["userID"] == "foo":
         print("Quitting program. Please populate config file.")
         quit()
@@ -256,7 +282,7 @@ def main():
 
     if not query_ok:
         logging.debug("Attempting token refresh.")
-        refresh_token(config_file, config)
+        refresh_token(config_filepath, config)
         streams = query_streams(config)
     # region logging
     logging.debug("Config file player settings:\n Player: " +
