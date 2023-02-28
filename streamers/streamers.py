@@ -18,20 +18,21 @@ import shutil  # Player install check
 import streamlink  # Extraction of m3u8 URIs for VLC
 import argparse
 import logging
+from typing import List, Dict, Optional, Any, Tuple, Union
 
 # endregion
 
 # region functions
 
 
-def config_set(configDir, configPath):
-    if not (configDir.is_dir()):  # Check if the config dir is present, and if not create it
-        Path.mkdir(configDir, parents=True, exist_ok=True)
+def config_set(config_dir: Path, config_path: Path) -> Union[configparser.ConfigParser, configparser.RawConfigParser]:
+    if not config_dir.is_dir():  # Check if the config dir is present, and if not create it
+        Path.mkdir(config_dir, parents=True, exist_ok=True)
     # Check if the config file is present, and if not create it with dummy values
-    if not (configPath.is_file()):
-        print("Config file not found. Creating dummy file at: " + str(configPath))
+    if not config_path.is_file():
+        print("Config file not found. Creating dummy file at: " + str(config_path))
         config = configparser.ConfigParser()
-        Path(configPath).touch()
+        Path(config_path).touch()
         config["TwitchBits"] = {
             "userID": "foo",
             "clientID": "bar",
@@ -43,8 +44,8 @@ def config_set(configDir, configPath):
             "player": "",
             "arguments": ""
         }
-        with open(configPath, "w") as configfile:
-            config.write(configfile)
+        with open(config_path, "w") as config_file:
+            config.write(config_file)
         print(
             "Please refer to the documentation to get guidance on how to generate the needed values for the config file."
         )
@@ -52,11 +53,11 @@ def config_set(configDir, configPath):
     else:
         # Populate vars
         config = configparser.RawConfigParser()
-        config.read(configPath)
+        config.read(config_path)
     return config
 
 
-def config_args():
+def config_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog='Streamers',
         description="Get a list of followed Twitch live streams from the comfort of your own CLI and optionall stream them."
@@ -89,13 +90,13 @@ def config_args():
     return args
 
 
-def session_vars(config, args):
+def session_vars(config: Dict[str, Any], args: argparse.Namespace) -> Dict[str, Any]:
     sessionFlags = {
         "player": "",
         "playerFlag": False,
         "arguments": ""
     }
-    """ 
+    """
         Check to see if a player has been selected in the config file and then assign it if so.
         Then, check if a player argument has been passed as an argument. If so, override the config file setting.
     """
@@ -121,7 +122,7 @@ def session_vars(config, args):
     return sessionFlags
 
 
-def query_streams(config):
+def query_streams(config: Dict[str, Any]) -> Tuple[bool, int, Dict[str, Any]]:
     headers = {
         "Authorization": "Bearer " + config["TwitchBits"]["access_token"],
         "Client-Id": config["TwitchBits"]["clientID"],
@@ -130,32 +131,27 @@ def query_streams(config):
     r = requests.get(
         "https://api.twitch.tv/helix/streams/followed", params=data, headers=headers
     )
-    return r
+    return r.ok, r.status_code, r.json()
 
 
-def refresh_token(configPath, config):
+def refresh_token(config_path, config) -> None:
     logging.debug("Renewing Token...")
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = (
-        "grant_type=refresh_token&refresh_token="
-        + config["TwitchBits"]["refreshToken"]
-        + "&client_id="
-        + config["TwitchBits"]["clientID"]
-        + "&client_secret="
-        + config["TwitchBits"]["clientSecret"]
-    )
+    data = {
+        "grant_type": "refresh_token",
+        "refresh_token": config["TwitchBits"]["refreshToken"],
+        "client_id": config["TwitchBits"]["clientID"],
+        "client_secret": config["TwitchBits"]["clientSecret"]
+    }
     r = requests.post("https://id.twitch.tv/oauth2/token",
                       headers=headers, data=data)
     config.set("TwitchBits", "access_token", r.json()["access_token"])
-    with open(configPath, "w") as configfile:
-        config.write(configfile)
+    with open(config_path, "w") as config_file:
+        config.write(config_file)
 
 
-def write_results(streams, player_config):
-    if len(streams.json()["data"]) > 0:
-        if player_config["playerFlag"] != False:
-            index = 0
-            print(
+def write_results(streams: Dict[str, Any], player_config: Dict[str, Any]) -> None:
+    table_header = (
                 "\nINDEX   CHANNEL "
                 + " " * 13
                 + "GAME"
@@ -165,7 +161,12 @@ def write_results(streams, player_config):
                 + "\n"
                 + "-" * 80
             )
-            for stream in streams.json()["data"]:
+
+    if len(streams["data"]) > 0:
+        if player_config["playerFlag"] != False:
+            index = 0
+            print(table_header)
+            for stream in streams["data"]:
                 print(
                     "{} {} {} {}".format(
                         str(index).ljust(7),
@@ -176,19 +177,11 @@ def write_results(streams, player_config):
                 )
                 index += 1
         else:
-            print(
-                "\nCHANNEL "
-                + " " * 13
-                + "GAME"
-                + " " * 37
-                + "VIEWERS"
-                + " " * 8
-                + "\n"
-                + "-" * 80
-            )
-            for stream in streams.json()["data"]:
+            print(table_header)
+            for stream in streams["data"]:
                 print(
-                    "{} {} {}".format(
+                    "{} {} {} {}".format(
+                        " " * 7,
                         stream["user_name"].ljust(20)[:20],
                         stream["game_name"].ljust(40)[:40],
                         str(stream["viewer_count"]).ljust(8),
@@ -198,10 +191,10 @@ def write_results(streams, player_config):
         print("No followed streams online at this time.")
 
 
-def player_selection(player_config, streams):
+def player_selection(player_config: Dict[str, Any], streams: Dict[str, Any]):
     while True:
         try:
-            maxSel = len(streams.json()["data"])
+            maxSel = len(streams["data"])
             index = -1
             while index not in range(0, maxSel):
                 index = int(input("Enter index of stream to watch: "))
@@ -215,13 +208,13 @@ def player_selection(player_config, streams):
             quit()
         else:
             break
-    stream = streams.json()["data"][index]["user_name"]
+    stream = streams["data"][index]["user_name"]
     start_player(stream, player_config)
 
 
-def start_player(stream, player_config):
+def start_player(stream: str, player_config: Dict[str, Any]):
     playerPath = shutil.which(player_config["player"])
-    if playerPath != None:
+    if playerPath:
         # Start stream
         print("----------Starting stream----------")
         if player_config["player"] == "mpv" or player_config["player"] == "streamlink" or player_config["player"] == "iina":
@@ -250,20 +243,20 @@ def main():
     if args.logging:
         logging.basicConfig(format='DEBUG: %(message)s', level=logging.DEBUG)
     # region config
-    configDir = Path("~/.config/streamers").expanduser()
-    configFile = Path("~/.config/streamers/config").expanduser()
-    config = config_set(configDir, configFile)
+    config_dir = Path("~/.config/streamers").expanduser()
+    config_file = Path("~/.config/streamers/config").expanduser()
+    config = config_set(config_dir, config_file)
     if config["TwitchBits"]["userID"] == "foo":
         print("Quitting program. Please populate config file.")
         quit()
     # endregion
     player_config = session_vars(config, args)
 
-    streams = query_streams(config)
+    query_ok, query_status, streams = query_streams(config)
 
-    if not streams.ok:
+    if not query_ok:
         logging.debug("Attempting token refresh.")
-        refresh_token(configFile, config)
+        refresh_token(config_file, config)
         streams = query_streams(config)
     # region logging
     logging.debug("Config file player settings:\n Player: " +
@@ -275,12 +268,12 @@ def main():
     logging.debug("playerFlag: " + str(player_config["playerFlag"]))
     # endregion
 
-    if streams.ok:
+    if query_ok:
         write_results(streams, player_config)
-        if player_config["playerFlag"] != False:
+        if player_config["playerFlag"]:
             player_selection(player_config, streams)
     else:
         print("Error getting stream data. Response code: " +
-              str(streams.status_code))
+              str(query_status))
 
 # endregion
