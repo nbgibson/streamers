@@ -100,7 +100,7 @@ If you recieve errors that the command is not known, please ensure that the inst
 
 9. Bask in a sense of self accomplishment; maybe watch a stream or something. Note that every few hours the existing token you have should expire and no longer work. If this happens the package should detect it, attempt to refresh it automatically, and prompt you to re-run it. If this does not work, please verify the values in the config file.
 
-## Hey, I'd like to, you know, *watch* these streams too. Preferbly without having to leave the CLI to do so.
+## Hey I'd like to, you know, *watch* these streams too. Preferbly without having to leave the CLI to do so.
 
 Buddy, I've got just the thing for you. As of version 1.2, Streamers now can optionall start the stream of your choice in one of a number of players (IINA, MPV, Streamlink, and VLC) if so desired. Use the `-p/--player` flag to provide your choice and `-a/--arguments` to provide a finer grain of control to your selection. For those of you looking for more of a committment, you can also set these values in your confile file for automatic intake.
 
@@ -111,8 +111,10 @@ Shut up.
 
 ### TODOs
 
-- ~~Implement debugging/logging/ect~~ Accessable via the -l/--logging flag!
+- ~~Implement debugging/logging/ect~~ Accessable via the `-l/--logging` flag!
 - ~~Investigate integration with [Streamlink](https://github.com/streamlink/streamlink)~~
 - Look into automated testing
+- Streamline onboarding
+- Make output configurable
 - ~~Investigate the viability of packaging~~
 - ~~Terrible horrible godawful in CLI streams~~ Now possbile via MPV
