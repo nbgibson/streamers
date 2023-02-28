@@ -6,19 +6,20 @@ import requests  # API fun
 from pathlib import Path
 import shutil  # Streamlink check
 import argparse
-
+from typing import Dict, List, Any, Optional, Tuple
 # endregion
 
 # region functions
 def config_set(
-    configDir, configPath
-):  # Check if the config file is present, and if not create it with dummy values
-    if not (configDir.is_dir()):
-        Path.mkdir(configDir, parents=True, exist_ok=True)
-    if not (configPath.is_file()):
-        print("Config file not found. Creating dummy file at: " + str(configPath))
+    config_dir: Path, config_path: Path
+) -> List[str]:
+    """Check if the config file is present, and if not create it with dummy values"""
+    if not config_dir.is_dir():
+        Path.mkdir(config_dir, parents=True, exist_ok=True)
+    if not config_path.is_file():
+        print("Config file not found. Creating dummy file at: " + str(config_path))
         config = configparser.ConfigParser()
-        Path(configPath).touch()
+        Path(config_path).touch()
         config["TwitchBits"] = {
             "userID": "foo",
             "clientID": "bar",
@@ -27,7 +28,7 @@ def config_set(
             "clientSecret": "fizzbuzz",
         }
         config["StreamLinkBits"] = {"enabled": "false"}
-        with open(configPath, "w") as configfile:
+        with open(config_path, "w", encoding="utf-8") as configfile:
             config.write(configfile)
         print(
             "Please refer to the README.md to get guidance on how to generate the needed values for the config file."
@@ -35,11 +36,12 @@ def config_set(
     else:
         # Populate vars
         config = configparser.RawConfigParser()
-        config.read(configPath)
+        config.read(config_path)
     return config
 
 
-def query_streams(config):
+def query_streams(config: Dict[str, Any]) -> Tuple[bool, int, Dict[str, Any]]:
+    """Performs a rest query to twitch to query stream statistics"""
     headers = {
         "Authorization": "Bearer " + config["TwitchBits"]["access_token"],
         "Client-Id": config["TwitchBits"]["clientID"],
@@ -48,40 +50,41 @@ def query_streams(config):
     r = requests.get(
         "https://api.twitch.tv/helix/streams/followed", params=data, headers=headers
     )
-    return r
+    return r.ok, r.status_code, r.json()
 
 
-def refresh_token(configPath, config):
+def refresh_token(config_path: Path, config: Dict[str, Any]) -> None:
+    """Performs a rest query to twitch to refresh the authorization token"""
     print("Renewing Token...")
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = (
-        "grant_type=refresh_token&refresh_token="
-        + config["TwitchBits"]["refreshToken"]
-        + "&client_id="
-        + config["TwitchBits"]["clientID"]
-        + "&client_secret="
-        + config["TwitchBits"]["clientSecret"]
-    )
+    data = {
+        "grant_type": "refresh_token",
+        "refresh_token": config["TwitchBits"]["refreshToken"],
+        "client_id": config["TwitchBits"]["clientID"],
+        "client_secret": config["TwitchBits"]["clientSecret"]
+    }
     r = requests.post("https://id.twitch.tv/oauth2/token", headers=headers, data=data)
     config.set("TwitchBits", "access_token", r.json()["access_token"])
-    with open(configPath, "w") as configfile:
+    with open(config_path, "w", encoding="utf-8") as configfile:
         config.write(configfile)
 
 
-def write_results(streams, streamLinkFlag):
-    if streamLinkFlag:
+def write_results(streams: Dict[str, Any], stream_link_flag: bool) -> None:
+    """Writes useful stats to the terminal"""
+    table_header = (
+        "\nINDEX   CHANNEL "
+        + " " * 13
+        + "GAME"
+        + " " * 37
+        + "VIEWERS"
+        + " " * 8
+        + "\n"
+        + "-" * 80
+    )
+    if stream_link_flag:
         index = 0
-        print(
-            "\nINDEX   CHANNEL "
-            + " " * 13
-            + "GAME"
-            + " " * 37
-            + "VIEWERS"
-            + " " * 8
-            + "\n"
-            + "-" * 80
-        )
-        for stream in streams.json()["data"]:
+        print(table_header)
+        for stream in streams["data"]:
             print(
                 "{} {} {} {}".format(
                     str(index).ljust(7),
@@ -92,17 +95,8 @@ def write_results(streams, streamLinkFlag):
             )
             index += 1
     else:
-        print(
-            "\nCHANNEL "
-            + " " * 13
-            + "GAME"
-            + " " * 37
-            + "VIEWERS"
-            + " " * 8
-            + "\n"
-            + "-" * 80
-        )
-        for stream in streams.json()["data"]:
+        print(table_header)
+        for stream in streams["data"]:
             print(
                 "{} {} {}".format(
                     stream["user_name"].ljust(20)[:20],
@@ -112,10 +106,11 @@ def write_results(streams, streamLinkFlag):
             )
 
 
-def stream_link(streams, locate):
+def stream_link(streams: Dict[str, Any], locate: str) -> None:
+    """Launches a twitch stream using the full path to streamlink."""
     while True:
         try:
-            maxSel = len(streams.json()["data"])
+            maxSel = len(streams["data"])
             index = -1
             while index not in range(0, maxSel):
                 index = int(input("Enter index of stream to watch: "))
@@ -130,8 +125,8 @@ def stream_link(streams, locate):
         else:
             break
 
-    streamer = streams.json()["data"][index]["user_name"]
-    os.system(locate + " https://twitch.tv/" + streamer)
+    streamer = streams["data"][index]["user_name"]
+    os.system(f"{locate} https://twitch.tv/{streamer}")
 
 
 # endregion
@@ -151,15 +146,15 @@ def main():
     args = parser.parse_args()
     # endregion
     # region config
-    configDir = Path("~/.config/streamers").expanduser()
-    configFile = Path("~/.config/streamers/config").expanduser()
-    config = config_set(configDir, configFile)
+    config_dir = Path("~/.config/streamers").expanduser()
+    config_file = Path("~/.config/streamers/config").expanduser()
+    config = config_set(config_dir, config_file)
     # endregion
     # Deadman's switch
     if config["TwitchBits"]["userID"] == "foo":
         print("Quitting program. Please populate config file.")
         quit()
-    streams = query_streams(config)
+    stream_ok, status_code, streams = query_streams(config)
     try:
         if args.streamlink or config["StreamLinkBits"]["enabled"].lower() == "true":
             streamLinkFlag = True
@@ -171,8 +166,8 @@ def main():
             "Missing ['StreamLinkBits'] section of the config file. Please refer to the documentation for an example config containing it."
         )
         quit()
-    if streams.ok:
-        if len(streams.json()["data"]) > 0:
+    if stream_ok:
+        if len(streams["data"]) > 0:
             write_results(streams, streamLinkFlag)
             locate = shutil.which("streamlink")
             if locate and streamLinkFlag:
@@ -181,8 +176,8 @@ def main():
         else:
             print("No followed streams online at this time.")
     else:
-        print("Error getting stream data. Response code: " + str(streams.status_code))
-        refresh_token(configFile, config)
+        print(f"Error getting stream data. Response code: {status_code}")
+        refresh_token(config_file, config)
         print("Attempting token refresh, please try again")
 
 
