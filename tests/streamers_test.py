@@ -5,6 +5,7 @@ from typing import List, Dict, Optional, Any, Tuple, Union
 
 from streamers import streamers
 
+
 @pytest.fixture
 def config_path(tmp_path):
     d = tmp_path / "config_path"
@@ -25,6 +26,7 @@ def config_file(config_path):
     """)
     return p
 
+
 @pytest.fixture
 def empty_session_flags() -> Dict[str, Any]:
     session_flags = {
@@ -34,12 +36,14 @@ def empty_session_flags() -> Dict[str, Any]:
     }
     return session_flags
 
+
 @pytest.fixture
 def mpv_session_flags(empty_session_flags) -> Dict[str, Any]:
     session_flags = empty_session_flags
     session_flags["player"] = "mpv"
     session_flags["playerFlag"] = "True"
     return session_flags
+
 
 @pytest.fixture
 def vlc_session_flags(empty_session_flags) -> Dict[str, Any]:
@@ -48,13 +52,16 @@ def vlc_session_flags(empty_session_flags) -> Dict[str, Any]:
     session_flags["playerFlag"] = "True"
     return session_flags
 
+
 def test_config_set_no_path(capsys):
     with pytest.raises(RuntimeError):
         result = streamers.config_set(None)
 
+
 def test_config_set_no_file(config_path, capsys):
     with pytest.raises(SystemExit):
         result = streamers.config_set(config_path)
+
 
 def test_config_set(config_file, capsys):
     result = streamers.config_set(config_file)
@@ -68,6 +75,8 @@ def test_config_set(config_file, capsys):
     assert "AAAAA" in result["TwitchBits"]["userid"]
 
 # @pytest.mark.skip("testing os calls is hard without mocking them.")
+
+
 def test_start_player_no_player(capsys, empty_session_flags):
     dummy_stream = "dummystream"
 
@@ -79,7 +88,9 @@ def test_start_player_no_player(capsys, empty_session_flags):
 
     assert "is either not installed or on the system's PATH. Please verify that it is present and retry." in stdout
 
-#@pytest.mark.skipif(shutil.which("mpv") == None, reason="mpv is not installed on the system")
+# @pytest.mark.skipif(shutil.which("mpv") == None, reason="mpv is not installed on the system")
+
+
 @pytest.mark.skip(reason="Attempts to launch an unknown stream")
 def test_start_player_mpv(capsys, mpv_session_flags):
     dummy_stream = "dummystream"
@@ -92,7 +103,9 @@ def test_start_player_mpv(capsys, mpv_session_flags):
 
     assert f"Starting {mpv_session_flags['player']} with command: {shutil.which('vlc')} {mpv_session_flags['arguments']} https://twitch.tv/{dummy_stream}" in stdout
 
-#@pytest.mark.skipif(shutil.which("vlc") == None, reason="vlc is not installed on the system")
+# @pytest.mark.skipif(shutil.which("vlc") == None, reason="vlc is not installed on the system")
+
+
 @pytest.mark.skip(reason="Attempts to launch an unknown stream")
 def test_start_player_vlc(capsys, vlc_session_flags):
     dummy_stream = "dummystream"
@@ -104,6 +117,7 @@ def test_start_player_vlc(capsys, vlc_session_flags):
     stdout = captured.out
 
     assert f"Starting {vlc_session_flags['player']} with command: {shutil.which('vlc')} {vlc_session_flags['arguments']}" in stdout
+
 
 def test_write_results_no_streamlink(capsys, empty_session_flags):
 
@@ -136,7 +150,6 @@ def test_write_results_no_streamlink(capsys, empty_session_flags):
 
     assert table_header in stdout
 
-
     stdout = stdout.replace(table_header, "").strip().split(" ")
     stdout = [std for std in stdout if std]
 
@@ -144,7 +157,6 @@ def test_write_results_no_streamlink(capsys, empty_session_flags):
     assert stdout[0] == "test"
     assert stdout[1] == "foo"
     assert stdout[2] == "69"
-
 
 
 def test_write_results_with_streamlink(capsys, mpv_session_flags):
@@ -187,6 +199,7 @@ def test_write_results_with_streamlink(capsys, mpv_session_flags):
     assert stdout[1] == "test"
     assert stdout[2] == "foo"
     assert stdout[3] == '69'
+
 
 def test_write_results_with_streamlink(capsys, vlc_session_flags):
 
