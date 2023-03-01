@@ -79,7 +79,8 @@ def test_start_player_no_player(capsys, empty_session_flags):
 
     assert "is either not installed or on the system's PATH. Please verify that it is present and retry." in stdout
 
-@pytest.mark.skipif(shutil.which("mpv") == None, reason="mpv is not installed on the system")
+#@pytest.mark.skipif(shutil.which("mpv") == None, reason="mpv is not installed on the system")
+@pytest.mark.skip(reason="Attempts to launch an unknown stream")
 def test_start_player_mpv(capsys, mpv_session_flags):
     dummy_stream = "dummystream"
 
@@ -91,7 +92,8 @@ def test_start_player_mpv(capsys, mpv_session_flags):
 
     assert f"Starting {mpv_session_flags['player']} with command: {shutil.which('vlc')} {mpv_session_flags['arguments']} https://twitch.tv/{dummy_stream}" in stdout
 
-@pytest.mark.skipif(shutil.which("vlc") == None, reason="vlc is not installed on the system")
+#@pytest.mark.skipif(shutil.which("vlc") == None, reason="vlc is not installed on the system")
+@pytest.mark.skip(reason="Attempts to launch an unknown stream")
 def test_start_player_vlc(capsys, vlc_session_flags):
     dummy_stream = "dummystream"
 
