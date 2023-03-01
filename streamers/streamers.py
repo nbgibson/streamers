@@ -38,6 +38,7 @@ CONFIG_SCHEMA: Dict[str, Dict[str, str]] = {
     }
 }
 
+
 def config_set(config_path: Path) -> ConfigParser:
     """
     Load our config file as described in `CONFIG_SCHEMA`. If this file does not
@@ -60,13 +61,15 @@ def config_set(config_path: Path) -> ConfigParser:
 
     # If our specified file doesn't exist, mkdir our directory
     if not config_path.exists():
-        Path.mkdir(Path(os.path.dirname(config_path)), parents=True, exist_ok=True)
+        Path.mkdir(Path(os.path.dirname(config_path)),
+                   parents=True, exist_ok=True)
 
     config_filepath = Path(os.path.join(config_path, config_file))
 
     # Check if the config file is present, and if not create it with dummy values
     if not config_filepath.is_file():
-        print(f"Config file not found. Creating dummy file at: {config_filepath}")
+        print(
+            f"Config file not found. Creating dummy file at: {config_filepath}")
         config = ConfigParser()
         config.read_dict(CONFIG_SCHEMA)
         with open(config_filepath, "w", encoding="utf-8") as file:
@@ -75,7 +78,6 @@ def config_set(config_path: Path) -> ConfigParser:
             "Please refer to the documentation to get guidance on how to generate the needed values for the config file."
         )
         exit(1)
-    # TODO: Check for player section, add if needed
     # Populate vars
     config = ConfigParser(interpolation=None)
     config.read(config_filepath)
@@ -201,15 +203,15 @@ def write_results(streams: Dict[str, Any], player_config: Dict[str, Any] = {}) -
     If no streams subscribed by the user are online, returns false.
     """
     table_header = (
-                "\nINDEX   CHANNEL "
-                + " " * 13
-                + "GAME"
-                + " " * 37
-                + "VIEWERS"
-                + " " * 8
-                + "\n"
-                + "-" * 80
-            )
+        "\nINDEX   CHANNEL "
+        + " " * 13
+        + "GAME"
+        + " " * 37
+        + "VIEWERS"
+        + " " * 8
+        + "\n"
+        + "-" * 80
+    )
 
     if len(streams["data"]) > 0:
         if player_config.get("playerFlag", None):
@@ -278,14 +280,19 @@ def start_player(stream: str, player_config: Dict[str, Any]) -> bool:
         # Start stream
         print("----------Starting stream----------")
         if player_config["player"] in ["mpv", "streamlink", "iina"]:
-            logging.debug(f"Starting {player_config['player']} with command: {playerPath} {player_config['arguments']} https://twitch.tv/{stream}")
-            os.system(f"{playerPath} {player_config['arguments']} https://twitch.tv/{stream}")
+            logging.debug(
+                f"Starting {player_config['player']} with command: {playerPath} {player_config['arguments']} https://twitch.tv/{stream}")
+            os.system(
+                f"{playerPath} {player_config['arguments']} https://twitch.tv/{stream}")
         elif player_config["player"] in ["vlc"]:
             streams = streamlink.streams(f"https://twitch.tv/{stream}")
-            logging.debug(f"Starting {player_config['player']} with command: {playerPath} {player_config['arguments']} {streams['best'].url}")
-            os.system(f"{playerPath} --meta-title \"{stream}\" --video-title \"{stream}\" {player_config['arguments']} {streams['best'].url}")
+            logging.debug(
+                f"Starting {player_config['player']} with command: {playerPath} {player_config['arguments']} {streams['best'].url}")
+            os.system(
+                f"{playerPath} --meta-title \"{stream}\" --video-title \"{stream}\" {player_config['arguments']} {streams['best'].url}")
         else:
-            print(f"{player_config['player']} is not currently supported at this time")
+            print(
+                f"{player_config['player']} is not currently supported at this time")
             return False
     else:
         print(player_config["player"] +
@@ -343,6 +350,6 @@ def main():
         if player_config["playerFlag"]:
             player_selection(player_config, streams)
     else:
-        print(f"Error getting stream data. Response code: {query_status}" )
+        print(f"Error getting stream data. Response code: {query_status}")
 
 # endregion
