@@ -315,7 +315,7 @@ def main():
     # region config
     config_dir = Path("~/.config/streamers").expanduser()
     config_file = "config"
-    config_filepath = config_dir + config_file
+    config_filepath = config_dir / config_file
     config = config_set(config_filepath)
     if config["TwitchBits"]["userID"] == CONFIG_SCHEMA["TwitchBits"]["userID"]:
         print("Default settings detected. Quitting program. Please populate config file.")
