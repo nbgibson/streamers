@@ -107,14 +107,17 @@ Buddy, I've got just the thing for you. As of version 1.2, Streamers now can opt
 **NOTE:** If passing an argument/arguments starting with a dash (-), use the format `-a="--i-luv-streamers"` or you will encounter errors. Argparse, not me! :^)
 
 ### Wait a minute, Streamlink isn't a player.
-Shut up. 
+Shut up.
 
 ### TODOs
 
 - ~~Implement debugging/logging/ect~~ Accessable via the `-l/--logging` flag!
 - ~~Investigate integration with [Streamlink](https://github.com/streamlink/streamlink)~~
-- Look into automated testing
+- ~~Look into automated testing~~ Implemented by [cakebizzle](https://github.com/cakebizzle)
 - Streamline onboarding
 - Make output configurable
 - ~~Investigate the viability of packaging~~
-- ~~Terrible horrible godawful in CLI streams~~ Now possbile via MPV
+- ~~Terrible horrible godawful in CLI streams~~ Now possbile via MPV!
+
+# Known issues
+Authentication tokens will expire over a given length of time, causing the application to throw an error. This can be resolved by repeating the onboarding process and inserting a new access token and refresh token. I'm working on refactoring the onboarding process to be a bit smoother and hope to be able to more gracefully handle this in the future.
