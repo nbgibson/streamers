@@ -120,4 +120,4 @@ Shut up.
 - ~~Terrible horrible godawful in CLI streams~~ Now possbile via MPV!
 
 # Known issues
-Authentication tokens will expire over a given length of time, causing the application to throw an error. This can be resolved by repeating the onboarding process and inserting a new access token and refresh token. I'm working on refactoring the onboarding process to be a bit smoother and hope to be able to more gracefully handle this in the future.
+Authentication tokens will expire over a given length of time, causing the application to throw an error. This can be resolved by repeating the onboarding process and inserting a new access token and refresh token (Steps 6 and 7). I'm working on refactoring the onboarding process to be a bit smoother and hope to be able to more gracefully handle this in the future.
