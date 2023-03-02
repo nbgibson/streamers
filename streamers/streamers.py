@@ -186,11 +186,13 @@ def refresh_token(config_path: Path, config: ConfigParser) -> None:
         "client_id": config["TwitchBits"]["clientID"],
         "client_secret": config["TwitchBits"]["clientSecret"]
     }
+    logging.debug(f"Config data: \n {data}")
     r = requests.post(
         "https://id.twitch.tv/oauth2/token",
         headers=headers,
         json=data
     )
+    logging.debug(f"Response JSON: \n{r.json()}")
     config.set("TwitchBits", "access_token", r.json()["access_token"])
     with open(config_path, "w", encoding="utf-8") as config_file:
         config.write(config_file)
