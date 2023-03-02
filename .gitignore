@@ -130,3 +130,6 @@ dmypy.json
 
 #lol VSCode
 .vscode
+
+#lol OSX
+.DS_Store
