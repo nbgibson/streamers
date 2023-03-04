@@ -330,7 +330,7 @@ def main():
     if not query_ok:
         logging.debug("Attempting token refresh.")
         refresh_token(config_filepath, config)
-        streams = query_streams(config)
+        query_ok, query_status, streams = query_streams(config)
 
     # region logging
     debug_lines = [
@@ -352,6 +352,7 @@ def main():
         if player_config["playerFlag"]:
             player_selection(player_config, streams)
     else:
-        print(f"Error getting stream data. Response code: {query_status}")
+        print(f"Error getting stream data. Response code: {query_status} \n \
+              Please verify your values in the config file and try again.")
 
 # endregion
