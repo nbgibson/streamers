@@ -326,7 +326,10 @@ def main():
     player_config = session_vars(config, args)
 
     query_ok, query_status, streams = query_streams(config)
-
+    logging.debug(f"Init query results:\
+                  \nQuery_ok:\n\t{query_ok}\
+                  \nquery_status: \n\t{query_status}\
+                  \nstreams: \n\t{streams}")
     if not query_ok:
         logging.debug("Attempting token refresh.")
         refresh_token(config_filepath, config)
