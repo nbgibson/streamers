@@ -2,6 +2,7 @@
 
 # region honeydo_list
 
+# TODO: Add version argparse flag
 # TODO: See if the onbolarding process can be somewhat autoamted
 # TODO: See if there is a way to make config file changes backwards compatible
 # TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
@@ -186,13 +187,12 @@ def refresh_token(config_path: Path, config: ConfigParser) -> None:
         "client_id": config["TwitchBits"]["clientID"],
         "client_secret": config["TwitchBits"]["clientSecret"]
     }
-    logging.debug(f"Config data: \n {data}")
     r = requests.post(
         "https://id.twitch.tv/oauth2/token",
         headers=headers,
         data=data
     )
-    logging.debug(f"Response JSON: \n{r.json()}")
+    logging.debug(f"Response JSON: \n\t{r.json()}")
     config.set("TwitchBits", "access_token", r.json()["access_token"])
     with open(config_path, "w", encoding="utf-8") as config_file:
         config.write(config_file)
@@ -330,6 +330,7 @@ def main():
                   \nQuery_ok:\n\t{query_ok}\
                   \nquery_status: \n\t{query_status}\
                   \nstreams: \n\t{streams}")
+
     if not query_ok:
         logging.debug("Attempting token refresh.")
         refresh_token(config_filepath, config)
@@ -358,4 +359,9 @@ def main():
         print(f"Error getting stream data. Response code: {query_status} \n \
               Please verify your values in the config file and try again.")
 
+
 # endregion
+
+# Added to enable debugging without having to make file changes.
+if __name__ == "__main__":
+    main()
