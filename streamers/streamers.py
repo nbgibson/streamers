@@ -3,6 +3,7 @@
 # region honeydo_list
 
 # TODO: Add version argparse flag
+# TODO: Pyinput Plus input handling
 # TODO: See if the onbolarding process can be somewhat autoamted
 # TODO: See if there is a way to make config file changes backwards compatible
 # TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
