@@ -3,6 +3,7 @@
 # region honeydo_list
 
 # TODO: Add version argparse flag
+# TODO: Argument to bypass/clear player settings for a pure query``
 # TODO: Pyinput Plus input handling
 # TODO: See if the onbolarding process can be somewhat autoamted
 # TODO: See if there is a way to make config file changes backwards compatible
