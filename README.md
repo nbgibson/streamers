@@ -1,14 +1,12 @@
 # streamers
 
 <p align="center">
-   <img src=assets/wizard-600.jpg width="30%" height="30%">
+   <img src=https://raw.githubusercontent.com/nbgibson/streamers/main/assets/wizard-600.jpg width="30%" height="30%">
 </p>
 
 <p align="center" style="font-size: 14px;">"Robot Wizard" by <a href=https://github.com/BootlegPotato/>DM Larson</a>, licensed under <a href=https://creativecommons.org/licenses/by-sa/4.0/legalcode>CC-BY-SA</a></p>
 
-
-
-A CLI tool inspired by [begs's](https://github.com/begs) [livestreamers](https://github.com/begs/livestreamers) script. Queries Twitch's API to see what followed channels, if any, are currently broadcasting. Can also open a given string in a selection of players if so desired.
+A CLI tool inspired by [begs&#39;s](https://github.com/begs) [livestreamers](https://github.com/begs/livestreamers) script. Queries Twitch's API to see what followed channels, if any, are currently broadcasting. Can also open a given string in a selection of players if so desired.
 
 ## Ok, so what's the deal here?
 
@@ -56,26 +54,20 @@ If you recieve errors that the command is not known, please ensure that the inst
    player =
    arguments =
    ```
-
 2. Head on over to the [Twitch developer console](https://dev.twitch.tv/console) and make an account ([docs](https://dev.twitch.tv/docs/authentication/register-app)) if you do not already have one.
-
 3. Make an App and register it ("Register Your Application"):
 
    - Name: Can be anything you please, is not critical for our workflow.
    - OAuth Redirect URLs: Again, can be anything you please for this workflow, but the documentation assumes you have used `http://localhost:3000`
    - Category: Arbitrary unless you're attempting to do this at a large scape. 'Other' and a description of what you're doing should be fine.
-
 4. Select 'Manage' for your newly created app and make note of the 'Client ID'. As you may have guessed this is what you want for the `clientid` value in the config file.
-
 5. From the same screen select 'New Secret' in the 'Client Secret' section near the bottom of the page and approve the generation of a new secret. Copy and save this somewhere as it will not be displayed once you leave the page. Insert this value for the `clientsecret` portion of the config file. Be advised that if you regenerate the secret it will wipe out old secrets so be sure to keep things synced up.
-
 6. Now we need to generate a code from your Twitch user account that says that the application you created has access to your data and then use that to generate a token that will be used with the script's API calls to do so.
 
    - Enter the following URL into a browser window of your choosing, subbing out '[Your_Client_ID_Goes_Here]' for the client ID value you got in step 4:
      `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=[Your_Client_ID_Goes_Here]&redirect_uri=http://localhost:3000&scope=user%3Aread%3Afollows`
    - You will be prompted to provide access to the application to see who your Twitch account follows, approve the prompt as this won't work otherwise.
    - After approval you will be dumped to an empty/broken page, note the URL displayed in your address bar. It will contain something similar to the following: `http://localhost:3000/?code=[Some_30ish_Character_Code]&scope=user%3Aread%3Afollows` Copy that code down as we will need it in the next step.
-
 7. We'll now take that code and send it back to Twitch to get an authorization and refresh token back so we can actually go about our business. Open up a terminal window (or Powershell/cmd/whatever) and enter the following command:
 
    ```bash
@@ -95,7 +87,6 @@ If you recieve errors that the command is not known, please ensure that the inst
    ```
 
    Take the values for `access_token` and `refresh_token` and insert them into your config file for `access_token` and `refreshtoken` accordingly. You should be all set.
-
 8. Execute the script and you should get back a table similar to the following:
 
    ```bash
@@ -105,7 +96,6 @@ If you recieve errors that the command is not known, please ensure that the inst
    SaltyBet             Retro                                    379
    giantbomb8                                                    97
    ```
-
 9. Bask in a sense of self accomplishment; maybe watch a stream or something. Note that every few hours the existing token you have should expire and no longer work. If this happens the package should detect it, attempt to refresh it automatically, and prompt you to re-run it. If this does not work, please verify the values in the config file.
 
 ## Hey I'd like to, you know, *watch* these streams too. Preferbly without having to leave the CLI to do so.
@@ -115,6 +105,7 @@ Buddy, I've got just the thing for you. As of version 1.2, Streamers now can opt
 **NOTE:** If passing an argument/arguments starting with a dash (-), use the format `-a="--i-luv-streamers"` or you will encounter errors. Argparse, not me! :^)
 
 ### Wait a minute, Streamlink isn't a player.
+
 Shut up.
 
 ### TODOs
@@ -128,5 +119,6 @@ Shut up.
 - ~~Terrible horrible godawful in CLI streams~~ Now possbile via MPV!
 
 # Known issues
+
 - Authentication tokens will expire over a given length of time, causing the application to throw an error. This can be resolved by repeating the onboarding process and inserting a new access token and refresh token (Steps 6 and 7). I'm working on refactoring the onboarding process to be a bit smoother and hope to be able to more gracefully handle this in the future.
 - Config file schema changes are not backwards compatible and will requre updaing your files. Please see the documenation aboce for the expected format. Sorry for the trouble.
