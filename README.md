@@ -1,5 +1,13 @@
 # streamers
 
+<p align="center">
+   <img src=assets/wizard-600.jpg width="30%" height="30%">
+</p>
+
+<p align="center" style="font-size: 14px;">"Robot Wizard" by <a href=https://github.com/BootlegPotato/>DM Larson</a>, licensed under <a href=https://creativecommons.org/licenses/by-sa/4.0/legalcode>CC-BY-SA</a></p>
+
+
+
 A CLI tool inspired by [begs's](https://github.com/begs) [livestreamers](https://github.com/begs/livestreamers) script. Queries Twitch's API to see what followed channels, if any, are currently broadcasting. Can also open a given string in a selection of players if so desired.
 
 ## Ok, so what's the deal here?
@@ -45,8 +53,8 @@ If you recieve errors that the command is not known, please ensure that the inst
    clientsecret = fizzbuzz
 
    [PlayerBits]
-   player=
-   arguments=
+   player =
+   arguments =
    ```
 
 2. Head on over to the [Twitch developer console](https://dev.twitch.tv/console) and make an account ([docs](https://dev.twitch.tv/docs/authentication/register-app)) if you do not already have one.
