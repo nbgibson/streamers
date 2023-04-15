@@ -2,7 +2,6 @@
 
 # region honeydo_list
 
-# TODO: Add '--mpv-force-media-title=testTitle' to iina
 # TODO: Index showing when no player is selected in config
 # TODO: Add version argparse flag
 # TODO: Argument to bypass/clear player settings for a pure query``
@@ -272,10 +271,11 @@ def player_selection(player_config: Dict[str, Any], streams: Dict[str, Any]):
         else:
             break
     stream = streams["data"][index]["user_name"]
-    start_player(stream, player_config)
+    title = streams["data"][index]["title"]
+    start_player(stream, title, player_config)
 
 
-def start_player(stream: str, player_config: Dict[str, Any]) -> bool:
+def start_player(stream: str, title: str, player_config: Dict[str, Any]) -> bool:
     """
     Launches a media player connected a specific twitch stream.
 
