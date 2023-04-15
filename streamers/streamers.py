@@ -5,6 +5,8 @@
 # TODO: Rework onboarding
 # TODO: Integrate Pyinputplus for input sanitizing
 # TODO: Add '--mpv-force-media-title=testTitle' to iina
+# TODO: Resolve streamlink pre-req not being downloaded with package
+# TODO: Index showing when no player is selected in config
 # TODO: Add version argparse flag
 # TODO: Argument to bypass/clear player settings for a pure query``
 # TODO: Pyinput Plus input handling
