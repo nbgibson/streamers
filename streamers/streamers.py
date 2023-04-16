@@ -2,7 +2,6 @@
 
 # region honeydo_list
 
-# TODO: Index showing when no player is selected in config
 # TODO: Add version argparse flag
 # TODO: Argument to bypass/clear player settings for a pure query``
 # TODO: Pyinput Plus input handling
@@ -22,6 +21,7 @@ import shutil  # Player install check
 import streamlink  # Extraction of m3u8 URIs for VLC
 import argparse
 import logging
+from importlib.metadata import version
 from typing import List, Dict, Optional, Any, Tuple, Union
 
 # endregion
@@ -87,6 +87,12 @@ def config_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="Streamers",
         description="Get a list of followed Twitch live streams from the comfort of your own CLI and optionall stream them.",
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        help="Returns the version of streamers you have installed.",
+        action="store_true",
     )
     parser.add_argument(
         "-l",
@@ -192,19 +198,19 @@ def write_results(streams: Dict[str, Any], player_config: Dict[str, Any] = {}) -
 
     If no streams subscribed by the user are online, returns false.
     """
-    table_header = (
-        "\nINDEX   CHANNEL "
-        + " " * 13
-        + "GAME"
-        + " " * 37
-        + "VIEWERS"
-        + " " * 8
-        + "\n"
-        + "-" * 80
-    )
 
     if len(streams["data"]) > 0:
-        if player_config.get("playerFlag", None):
+        if player_config["playerFlag"] != False:
+            table_header = (
+                "\nINDEX   CHANNEL "
+                + " " * 13
+                + "GAME"
+                + " " * 37
+                + "VIEWERS"
+                + " " * 8
+                + "\n"
+                + "-" * 80
+            )
             index = 0
             print(table_header)
             for stream in streams["data"]:
@@ -218,15 +224,20 @@ def write_results(streams: Dict[str, Any], player_config: Dict[str, Any] = {}) -
                 )
                 index += 1
         else:
+            table_header = (
+                "\nCHANNEL "
+                + " " * 13
+                + "GAME"
+                + " " * 16  # 37
+                + "VIEWERS"
+                + " " * 3
+                + "\n"
+                + "-" * 50
+            )
             print(table_header)
             for stream in streams["data"]:
                 print(
-                    "{} {} {} {}".format(
-                        " " * 7,
-                        stream["user_name"].ljust(20)[:20],
-                        stream["game_name"].ljust(40)[:40],
-                        str(stream["viewer_count"]).ljust(8),
-                    )
+                    f"{stream['user_name'].ljust(20)[:20]} {stream['game_name'].ljust(19)[:19]} {str(stream['viewer_count']).ljust(8)}"
                 )
     else:
         print("No followed streams online at this time.")
@@ -306,6 +317,9 @@ def main():
     Entrypoint of script.
     """
     args = config_args()
+    if args.version:
+        print(f"{version('streamers')}abcde")
+        quit()
     if args.logging:
         logging.basicConfig(format="DEBUG: %(message)s", level=logging.DEBUG)
     # region config
