@@ -4,7 +4,7 @@
 
 # TODO: Argument to bypass/clear player settings for a pure query``
 # TODO: Pyinput Plus input handling (SimpleTermMenu may be a better option.)
-# TODO: See if the onboarding process can be somewhat autoamted (Yes, it can.)
+# TODO: See if the onboarding process can be somewhat automated (Yes, it can.)
 # TODO: See if there is a way to make config file changes backwards compatible
 # TODO: Look into making table display customizable in terms of size (auto sizing based on window size?) or colums sortable via config file
 # TODO: Documentation rework for pypi visibility. Github isn't really the focus now. Look into split documentation?
