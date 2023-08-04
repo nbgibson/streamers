@@ -318,7 +318,7 @@ def main():
     """
     args = config_args()
     if args.version:
-        print(f"{version('streamers')}abcde")
+        print(f"{version('streamers')}")
         quit()
     if args.logging:
         logging.basicConfig(format="DEBUG: %(message)s", level=logging.DEBUG)
