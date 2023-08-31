@@ -121,4 +121,4 @@ Shut up.
 # Known issues
 
 - Authentication tokens will expire over a given length of time, causing the application to throw an error. This can be resolved by repeating the onboarding process and inserting a new access token and refresh token (Steps 6 and 7). I'm working on refactoring the onboarding process to be a bit smoother and hope to be able to more gracefully handle this in the future.
-- Config file schema changes are not backwards compatible and will requre updaing your files. Please see the documenation aboce for the expected format. Sorry for the trouble.
+- Config file schema changes are not backwards compatible and will requre updaing your files. Please see the documenation above for the expected format. Sorry for the trouble.
