@@ -24,8 +24,9 @@ pip install streamers
 
 - An existing Twitch account
 - Some flavor of Python3
-- The Python requests library: 2.26.0 or newer
+- requests: 2.26.0 or newer
 - Streamlink: 5.3.0 or newer
+- PyChromecast: 13.0.7
 - An Internet connection
 
 ## Execution
