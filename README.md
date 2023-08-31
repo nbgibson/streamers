@@ -27,7 +27,7 @@ pip install streamers
 - requests: 2.26.0 or newer
 - Streamlink: 5.3.0 or newer
 - PyChromecast: 13.0.7
-- An Internet connection
+- An internet connection
 
 ## Execution
 
