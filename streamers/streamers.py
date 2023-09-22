@@ -313,7 +313,7 @@ def start_player(stream: str, player_config: Dict[str, Any]) -> bool:
 # region main
 
 
-def main():
+def main() -> None:
     """
     Entrypoint of script.
     """
